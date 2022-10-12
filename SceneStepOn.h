@@ -13,8 +13,9 @@ public:
 		m_waitFrame = 0;
 		m_waitTime = 0;
 		m_num = 0;
-		m_transparent = 0;
 		m_isSuccess = false;
+		m_fadeBright = 0;
+		m_fadeSpeed = 0;
 	}
 	virtual ~SceneStepOn(){}
 
@@ -36,8 +37,11 @@ private:
 	int m_waitFrame;
 	int m_waitTime;
 	int m_num;
-	//透明にする
-	int m_transparent;
+
 	//成功したかどうか
 	bool m_isSuccess;
+	//フェード処理
+	int m_fadeBright;
+	//フェード速度
+	int m_fadeSpeed;
 };

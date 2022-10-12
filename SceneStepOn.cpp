@@ -24,8 +24,10 @@ void SceneStepOn::init()
 
 	m_waitFrame = kWaitFrame;
 	m_waitTime = kWaitTime;
-	m_num = m_waitTime / 60;
-	m_transparent = 255;
+	m_num = 3;
+
+	m_fadeBright = 0;
+	m_fadeSpeed = 8;
 }
 void SceneStepOn::end()
 {
@@ -35,9 +37,13 @@ void SceneStepOn::end()
 
 SceneBase* SceneStepOn::update()
 {
-	m_transparent -= 2;
-	if (m_transparent <= 0)	m_transparent = 0;
+	m_fadeBright += m_fadeSpeed;
 
+	if (m_fadeBright >= 255)
+	{
+		m_fadeBright = 255;
+		m_fadeSpeed = 0;
+	}
 	if (m_waitFrame > 0)
 	{
 		m_waitFrame--;
@@ -89,6 +95,7 @@ SceneBase* SceneStepOn::update()
 }
 void SceneStepOn::draw()
 {
+	SetDrawBright(m_fadeBright, m_fadeBright, m_fadeBright);
 	// 地面の描画
 	DrawLine(0, kFieldY, Game::kScreenWidth, kFieldY, GetColor(255, 255, 255));
 	m_player.draw();
@@ -96,14 +103,12 @@ void SceneStepOn::draw()
 
 	if (m_waitFrame != 0)
 	{
-		DrawString(300, 200, "ふめ", GetColor(255, 255, 255));
+		DrawString(340, 200, "ふめ", GetColor(255, 255, 255));
+		DrawString(300, 220, "←・→キーで移動", GetColor(255, 255, 255));
 	}
 	if (m_isSuccess)
 	{
 		DrawString(300, 200, "成功！", GetColor(255, 255, 255));
 		DrawFormatString(230, 220, GetColor(255, 255, 255),"タイトルに戻る..%d",m_num );
 	}
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, m_transparent);//◇半透明にする　0透明 ～ 255透明じゃない
-	DrawBox(0, 0, Game::kScreenWidth, Game::kScreenHeight, GetColor(255, 255, 255), true);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);//◇元に戻す
 }
