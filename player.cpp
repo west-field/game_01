@@ -1,6 +1,7 @@
 #include "DxLib.h"
 #include "game.h"
 #include "player.h"
+#include "Pad.h"
 
 namespace
 {
@@ -11,7 +12,7 @@ namespace
 }
 
 // グラフィックデータの設定	内部でサイズも取得する
-void Player::setGraphic(int handle)
+void PlayerStepOn::setGraphic(int handle)
 {
 	m_handle = handle;
 	GetGraphSizeF(m_handle, &m_graphSize.x, &m_graphSize.y);
@@ -19,7 +20,7 @@ void Player::setGraphic(int handle)
 	m_colSize.y = m_graphSize.y;
 }
 // 初期設定	地面の高さを与える
-void Player::setup(float fieldY)
+void PlayerStepOn::setup(float fieldY)
 {
 	m_fieldY = fieldY;
 	m_pos.x = 32.0f;
@@ -29,7 +30,7 @@ void Player::setup(float fieldY)
 	m_vec.y = 0.0f;
 }
 
-void Player::update()
+void PlayerStepOn::update()
 {
 	m_pos += m_vec;
 
@@ -44,11 +45,12 @@ void Player::update()
 	if (isField)
 	{
 		m_vec.y = kJumpAcc;//ジャンプ開始
+		PlaySoundMem(m_hJumpSe, DX_PLAYTYPE_BACK, true);
 	}
 
 	// キー入力処理 左右に移動
-	int padState = GetJoypadInputState(DX_INPUT_KEY_PAD1);
-	if (padState & PAD_INPUT_RIGHT)
+	Pad::update();
+	if (Pad::isPress(PAD_INPUT_RIGHT))
 	{
 		m_isRight = true;
 		if (m_pos.x > Game::kScreenWidth - 32.0f)
@@ -57,7 +59,7 @@ void Player::update()
 		}
 		m_pos.x += 3.0f;
 	}
-	if (padState & PAD_INPUT_LEFT)
+	if (Pad::isPress(PAD_INPUT_LEFT))
 	{
 		m_isRight = false;
 		if (m_pos.x < 0)
@@ -69,7 +71,7 @@ void Player::update()
 	m_vec.y += kGravity;
 
 }
-void Player::draw()
+void PlayerStepOn::draw()
 {
 	if (m_isRight)
 	{

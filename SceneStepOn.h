@@ -8,8 +8,10 @@ class SceneStepOn : public SceneBase
 public:
 	SceneStepOn()
 	{
-		m_hPlayer = -1;
-		m_hEnemy = -1;
+		m_hPlayerGraph = -1;
+		m_hEnemyGraph = -1;
+		m_hPlayerSound = -1;
+		m_hEnemySound = -1;
 		m_waitFrame = 0;
 		m_waitTime = 0;
 		m_num = 0;
@@ -27,12 +29,15 @@ public:
 
 private:
 	//グラフィックハンドル
-	int m_hPlayer;
-	int m_hEnemy;
+	int m_hPlayerGraph;
+	int m_hEnemyGraph;
+	//音
+	int m_hPlayerSound;
+	int m_hEnemySound;
 	//プレイヤー
-	Player m_player;
+	PlayerStepOn m_player;
 	//エネミー
-	Enemy m_enemy;
+	EnemyStepOn m_enemy;
 	//移動開始までの待ち時間(フレーム数)
 	int m_waitFrame;
 	int m_waitTime;

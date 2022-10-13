@@ -8,11 +8,12 @@ public:
 	{
 		m_fadeBright = 0;
 		m_fadeSpeed = 0;
+		m_hSelectionSe = -1;
 	}
 	virtual ~SceneTitle(){}
 
 	virtual void init() override;
-	virtual void end() override{}
+	virtual void end() override;
 
 	virtual SceneBase* update() override;
 	virtual void draw()override;
@@ -21,4 +22,5 @@ private:
 	int m_fadeBright;
 	//フェード速度
 	int m_fadeSpeed;
+	int m_hSelectionSe;
 };

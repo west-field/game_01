@@ -5,6 +5,12 @@
 
 namespace
 {
+	//グラフィックファイル名
+	const char* const kPlayerGraphName = "data/playerStepOn.bmp";
+	const char* const kEnemyGraphName = "data/enemyStepOn.bmp";
+	//音ファイル名
+	const char* const kPlayerSoundName = "sound/player_jump.mp3";
+	const char* const kEnemySoundName = "sound/enemy_damage.mp3";
 	// 地面の高さ
 	constexpr int kFieldY = Game::kScreenHeight - 64;
 	constexpr int kWaitTime = 60 * 4;
@@ -13,14 +19,19 @@ namespace
 
 void SceneStepOn::init()
 {
-	m_hPlayer = LoadGraph("data/player.bmp");
-	m_hEnemy = LoadGraph("data/enemy.bmp");
+	m_hPlayerGraph = LoadGraph(kPlayerGraphName);
+	m_hEnemyGraph = LoadGraph(kEnemyGraphName);
 
-	m_player.setGraphic(m_hPlayer);
+	m_hPlayerSound = LoadSoundMem(kPlayerSoundName);
+	m_hEnemySound = LoadSoundMem(kEnemySoundName);
+
+	m_player.setGraphic(m_hPlayerGraph);
 	m_player.setup(kFieldY);
+	m_player.setJumpSe(m_hPlayerSound);
 
-	m_enemy.setGraphic(m_hEnemy);
+	m_enemy.setGraphic(m_hEnemyGraph);
 	m_enemy.setup(kFieldY);
+	m_enemy.setDamageSe(m_hEnemySound);
 
 	m_waitFrame = kWaitFrame;
 	m_waitTime = kWaitTime;
@@ -31,8 +42,10 @@ void SceneStepOn::init()
 }
 void SceneStepOn::end()
 {
-	DeleteGraph(m_hPlayer);
-	DeleteGraph(m_hEnemy);
+	DeleteGraph(m_hPlayerGraph);
+	DeleteGraph(m_hEnemyGraph);
+	DeleteSoundMem(m_hPlayerSound);
+	DeleteSoundMem(m_hEnemySound);
 }
 
 SceneBase* SceneStepOn::update()

@@ -9,7 +9,7 @@ namespace
 }
 
 // グラフィックデータの設定	内部でサイズも取得する
-void Enemy::setGraphic(int handle)
+void EnemyStepOn::setGraphic(int handle)
 {
 	m_handle = handle;
 	GetGraphSizeF(m_handle, &m_graphSize.x, &m_graphSize.y);
@@ -18,7 +18,7 @@ void Enemy::setGraphic(int handle)
 }
 
 // 初期設定	地面の高さを与える
-void Enemy::setup(float fieldY)
+void EnemyStepOn::setup(float fieldY)
 {
 	m_fieldY = fieldY;
 	m_pos.x = Game::kScreenWidth - 32.0f;
@@ -29,7 +29,7 @@ void Enemy::setup(float fieldY)
 }
 
 // 更新
-void Enemy::update()
+void EnemyStepOn::update()
 {
 	if (m_isDead)	return;
 	m_pos += m_vec;
@@ -46,7 +46,7 @@ void Enemy::update()
 	}
 }
 // 描画
-void Enemy::draw()
+void EnemyStepOn::draw()
 {
 	if (m_isDead)	return;
 	if (m_isRight)
@@ -62,8 +62,10 @@ void Enemy::draw()
 			m_handle, true, false);
 	}
 }
-bool Enemy::isCol(Player& player)
+bool EnemyStepOn::isCol(PlayerStepOn& player)
 {
+	if (m_isDead)	return false;
+
 	float enemyLeft = getPos().x;
 	float enemyRight = getPos().x + m_colSize.x;
 	float enemyTop = getPos().y;
@@ -79,5 +81,6 @@ bool Enemy::isCol(Player& player)
 	if (enemyTop > playerBottom)	return false;//緑
 	if (enemyBottom < playerTop)	return false;//青
 
+	PlaySoundMem(m_hDamageSe, DX_PLAYTYPE_BACK, true);
 	return true;
 }

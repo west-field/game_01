@@ -1,13 +1,25 @@
-#include "SceneTitle.h"
-#include "SceneMain.h"
 #include "DxLib.h"
 #include "game.h"
+#include "SceneTitle.h"
+#include "SceneMain.h"
 #include "SceneStepOn.h"
+#include "Pad.h"
+
+namespace
+{
+	const char* const kSelectionSoundName = "sound/selection.mp3";
+}
 
 void SceneTitle::init()
 {
 	m_fadeBright = 0;
 	m_fadeSpeed = 8;
+	m_hSelectionSe = LoadSoundMem(kSelectionSoundName);
+}
+
+void SceneTitle::end()
+{
+	DeleteSoundMem(m_hSelectionSe);
 }
 
 SceneBase* SceneTitle::update()
@@ -27,12 +39,13 @@ SceneBase* SceneTitle::update()
 		return (new SceneStepOn);
 	}
 
-	int padState = GetJoypadInputState(DX_INPUT_KEY_PAD1);
+	Pad::update();
 	if (m_fadeSpeed == 0)
 	{
-		if (padState & PAD_INPUT_1)
+		if (Pad::isPress(PAD_INPUT_1))
 		{
 			m_fadeSpeed = -8;
+			PlaySoundMem(m_hSelectionSe, DX_PLAYTYPE_BACK, true);
 		}
 	}
 	
