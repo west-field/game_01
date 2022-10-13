@@ -11,14 +11,38 @@ namespace
 	constexpr float kGravity = 0.5f;
 }
 
+//------------------------------------------------
+//PlayerBase
+//------------------------------------------------
+
 // グラフィックデータの設定	内部でサイズも取得する
-void PlayerStepOn::setGraphic(int handle)
+void PlayerBase::setGraph(int handle)
 {
 	m_handle = handle;
 	GetGraphSizeF(m_handle, &m_graphSize.x, &m_graphSize.y);
 	m_colSize.x = m_graphSize.x / 2;
 	m_colSize.y = m_graphSize.y;
 }
+void PlayerBase::draw()
+{
+	if (m_isDead)	return;
+	if (m_isRight)
+	{
+		DrawRectGraphF(m_pos.x, m_pos.y, 0, 0,
+			static_cast<int>(m_graphSize.x) / 2, static_cast<int>(m_graphSize.y),
+			m_handle, true, false);
+	}
+	else
+	{
+		DrawRectGraphF(m_pos.x, m_pos.y, static_cast<int>(m_graphSize.x) / 2, 0,
+			static_cast<int>(m_graphSize.x) / 2, static_cast<int>(m_graphSize.y),
+			m_handle, true, false);
+	}
+}
+//------------------------------------------------
+//PlayerStepOn
+//------------------------------------------------
+
 // 初期設定	地面の高さを与える
 void PlayerStepOn::setup(float fieldY)
 {
@@ -32,6 +56,8 @@ void PlayerStepOn::setup(float fieldY)
 
 void PlayerStepOn::update()
 {
+	if (m_isDead)	return;
+
 	m_pos += m_vec;
 
 	//地面との当たり判定
@@ -71,18 +97,45 @@ void PlayerStepOn::update()
 	m_vec.y += kGravity;
 
 }
-void PlayerStepOn::draw()
+
+bool PlayerStepOn::isCol(EnemyStepOn& enemy)
 {
-	if (m_isRight)
-	{
-		DrawRectGraphF(m_pos.x, m_pos.y, 0, 0,
-			static_cast<int>(m_graphSize.x) / 2, static_cast<int>(m_graphSize.y),
-			m_handle, true, false);
-	}
-	else
-	{
-		DrawRectGraphF(m_pos.x, m_pos.y, static_cast<int>(m_graphSize.x) / 2, 0,
-			static_cast<int>(m_graphSize.x) / 2, static_cast<int>(m_graphSize.y),
-			m_handle, true, false);
-	}
+	if (m_isDead)	return false;
+
+	float playerLeft = getPos().x;
+	float playerRight = getPos().x + m_colSize.x;
+	float playerTop = getPos().y;
+	float playerBottom = getPos().y + m_colSize.y;
+
+	float enemyLeft = enemy.getPos().x;
+	float enemyRight = enemy.getPos().x + enemy.getColSize().x;
+	float enemyTop = enemy.getPos().y;
+	float enemyBottom = enemy.getPos().y + enemy.getColSize().y;
+
+	if (playerLeft > enemyRight)	return false;//赤
+	if (playerRight < enemyLeft)	return false;//黄色
+	if (playerTop > enemyBottom)	return false;//緑
+	if (playerBottom < enemyTop)	return false;//青
+
+	return true;
+}
+
+//------------------------------------------------
+//PlayerKnockDown
+//------------------------------------------------
+
+// 初期設定	地面の高さを与える
+void PlayerKnockDown::setup(float fieldY)
+{
+	m_fieldY = fieldY;
+	m_pos.x = 32.0f;
+	m_pos.y = m_fieldY - m_graphSize.y;
+
+	m_vec.x = 0.0f;
+	m_vec.y = 0.0f;
+}
+
+void PlayerKnockDown::update()
+{
+
 }

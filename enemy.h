@@ -1,6 +1,5 @@
 #pragma once
 #include "Vec2.h"
-#include "player.h"
 
 class EnemyBase
 {
@@ -9,16 +8,19 @@ public:
 	{
 		m_handle = -1;
 		m_fieldY = 0;
+
+		m_isDead = false;
+		m_isRight = false;
 	}
 	virtual ~EnemyBase(){}
 
 	// グラフィックデータの設定	内部でサイズも取得する
-	virtual void setGraphic(int handle) {}
+	virtual void setGraph(int handle);
 	// 初期設定
 	virtual void setup(float fieldY) {}
 
 	virtual void update(){}
-	virtual void draw(){}
+	virtual void draw();
 
 public:
 	// グラフィックハンドル
@@ -33,6 +35,10 @@ public:
 	Vec2 m_vec;
 	// 地面の高さ
 	float m_fieldY;
+	//当たったかどうか
+	bool m_isDead;
+	//右を向いているかどうか
+	bool m_isRight;
 };
 
 class EnemyStepOn : public EnemyBase
@@ -41,39 +47,38 @@ public:
 	EnemyStepOn()
 	{
 		m_hDamageSe = -1;
-		m_isDead = false;
-		m_isRight = false;
 	}
 	virtual ~EnemyStepOn(){}
-
-	// グラフィックデータの設定	内部でサイズも取得する
-	virtual void setGraphic(int handle)override;
 	
 	// 初期設定
 	virtual void setup(float fieldY)override;
 
 	// 更新
 	virtual void update()override;
-	// 描画
-	virtual void draw()override;
 
 	void setDamageSe(int damageSe) { m_hDamageSe = damageSe; }
-
-	// playerとの衝突判定
-	bool isCol(PlayerStepOn& player);
 
 	// 位置の取得
 	Vec2 getPos() const { return m_pos; }
 	// サイズの取得
-	Vec2 getSize() const { return m_graphSize; }
+	Vec2 getColSize() const { return m_graphSize; }
 
 	// 死亡設定
 	void setDead(bool isDead) { m_isDead = isDead; }
 
 private:
 	int m_hDamageSe;
-	//当たったかどうか
-	bool m_isDead;
-	//右を向いているかどうか
-	bool m_isRight;
+
+};
+
+class EnemyKnockDown : public EnemyBase
+{
+public:
+
+	// 初期設定
+	virtual void setup(float fieldY)override;
+
+	// 更新
+	virtual void update()override;
+private:
 };

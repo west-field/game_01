@@ -156,6 +156,7 @@
     <ClCompile Include="Pad.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="SceneBase.cpp" />
+    <ClCompile Include="SceneKnockDown.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SceneTitle.cpp" />
     <ClCompile Include="SceneStepOn.cpp" />
@@ -167,6 +168,7 @@
     <ClInclude Include="Pad.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="SceneBase.h" />
+    <ClInclude Include="SceneKnockDown.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SceneTitle.h" />
     <ClInclude Include="SceneStepOn.h" />
