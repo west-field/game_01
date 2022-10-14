@@ -81,7 +81,7 @@ SceneBase* SceneStepOn::update()
 
 	if (m_player.isCol(m_enemy))
 	{
-		m_enemy.setDead(true);
+		m_enemy.setHit(true);
 		m_isSuccess = true;
 	}
 

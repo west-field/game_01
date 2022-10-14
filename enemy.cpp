@@ -69,7 +69,11 @@ void EnemyStepOn::update()
 		m_isRight = false;
 	}
 
-	PlaySoundMem(m_hDamageSe, DX_PLAYTYPE_BACK, true);
+	if (m_isHit)
+	{
+		PlaySoundMem(m_hDamageSe, DX_PLAYTYPE_BACK, true);
+		m_isDead = true;
+	}
 }
 
 //------------------------------------------------
@@ -83,12 +87,53 @@ void EnemyKnockDown::setup(float fieldY)
 	m_pos.x = Game::kScreenWidth - 32.0f;
 	m_pos.y = m_fieldY - m_graphSize.y;
 
-	m_vec.x = 0.0f;
+	m_vec.x = kSpeed;
 	m_vec.y = 0.0f;
 }
 
 // çXêV
 void EnemyKnockDown::update()
 {
-	
+	if (m_isDead)	return;
+	m_pos += m_vec;
+
+	if (m_pos.x < 0)
+	{
+		m_vec.x *= -1.0f;
+		m_isRight = true;
+	}
+	if (m_pos.x > Game::kScreenWidth - 32.0f)
+	{
+		m_vec.x *= -1.0f;
+		m_isRight = false;
+	}
+
+	if (m_isHit)
+	{
+		//PlaySoundMem(m_hDamageSe, DX_PLAYTYPE_BACK, true);
+		m_isDead = true;
+	}
 }
+#if false
+bool EnemyKnockDown::isCol(Shot& shot)
+{
+	if (m_isDead)	return false;
+
+	float enemyLeft = getPos().x;
+	float enemyRight = getPos().x + m_colSize.x;
+	float enemyTop = getPos().y;
+	float enemyBottom = getPos().y + m_colSize.y;
+
+	float shotLeft = shot.getPos().x;
+	float shotRight = shot.getPos().x + shot.getColSize().x;
+	float shotTop = shot.getPos().y;
+	float shotBottom = shot.getPos().y + shot.getColSize().y;
+
+	if (enemyLeft > shotRight)	return false;//ê‘
+	if (enemyRight < shotLeft)	return false;//â©êF
+	if (enemyTop > shotBottom)	return false;//óŒ
+	if (enemyBottom < shotTop)	return false;//ê¬
+
+	return true;
+}
+#endif

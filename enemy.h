@@ -8,7 +8,7 @@ public:
 	{
 		m_handle = -1;
 		m_fieldY = 0;
-
+		m_isHit = false;
 		m_isDead = false;
 		m_isRight = false;
 	}
@@ -22,7 +22,15 @@ public:
 	virtual void update(){}
 	virtual void draw();
 
-public:
+	// 当たったかどうか
+	virtual void setHit(bool isHit) { m_isHit = isHit; }
+
+	// 位置の取得
+	virtual Vec2 getPos() const { return m_pos; }
+	// サイズの取得
+	virtual Vec2 getColSize() const { return m_graphSize; }
+
+protected:
 	// グラフィックハンドル
 	int m_handle;
 	// グラフィックの幅と高さ
@@ -36,6 +44,7 @@ public:
 	// 地面の高さ
 	float m_fieldY;
 	//当たったかどうか
+	int m_isHit;
 	bool m_isDead;
 	//右を向いているかどうか
 	bool m_isRight;
@@ -52,33 +61,35 @@ public:
 	
 	// 初期設定
 	virtual void setup(float fieldY)override;
-
 	// 更新
 	virtual void update()override;
 
+public:
+	//ダメージ音を取得
 	void setDamageSe(int damageSe) { m_hDamageSe = damageSe; }
-
-	// 位置の取得
-	Vec2 getPos() const { return m_pos; }
-	// サイズの取得
-	Vec2 getColSize() const { return m_graphSize; }
-
-	// 死亡設定
-	void setDead(bool isDead) { m_isDead = isDead; }
 
 private:
 	int m_hDamageSe;
-
 };
 
 class EnemyKnockDown : public EnemyBase
 {
 public:
-
+	EnemyKnockDown(){}
+	virtual ~EnemyKnockDown(){}
 	// 初期設定
 	virtual void setup(float fieldY)override;
-
 	// 更新
 	virtual void update()override;
+
+	// 位置の取得
+	virtual Vec2 getPos() const { return m_pos; }
+	// サイズの取得
+	virtual Vec2 getColSize() const { return m_graphSize; }
+public:
+#if false
+	// shotとの衝突判定
+	bool isCol(Shot& shot);
+#endif
 private:
 };

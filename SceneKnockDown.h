@@ -2,6 +2,8 @@
 #include "SceneBase.h"
 #include "player.h"
 #include "enemy.h"
+#include "ShotBase.h"
+#include <vector>
 
 class SceneKnockDown : public SceneBase
 {
@@ -14,12 +16,22 @@ public:
 
 	virtual SceneBase* update() override;
 	virtual void draw() override;
+
+	//弾の生成
+	bool createShotNormal(Vec2 pos);
+	bool createShotBound(Vec2 pos);
+	bool createShotSin(Vec2 pos);
 private:
+	//プレイヤー
 	PlayerKnockDown m_player;
+	//エネミー
 	EnemyKnockDown m_enemy;
+	//ショット
+	std::vector<ShotBase*> m_pShotVt;
 	//グラフィックハンドル
 	int m_hPlayerGraph;
 	int m_hEnemyGraph;
+	int m_hShotGraph;
 	//移動開始までの待ち時間(フレーム数)
 	int m_waitFrame;
 	int m_waitTime;

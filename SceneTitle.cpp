@@ -55,5 +55,5 @@ void SceneTitle::draw()
 {
 	SetDrawBright(m_fadeBright, m_fadeBright, m_fadeBright);//描画輝度をセット
 	DrawString(200, 100, "タイトル画面", GetColor(255, 255, 255));
-	DrawString(110, 300, " zキーを押してスタート escキーを押して終了", GetColor(255, 255, 255));
+	DrawString(110, 300, " z(A)を押してスタート escを押して終了", GetColor(255, 255, 255));
 }
