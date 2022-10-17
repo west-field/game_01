@@ -5,7 +5,7 @@
 namespace
 {
 	//速度
-	constexpr float kSpeed = -5.0f;
+	constexpr float kSpeed = -4.0f;
 }
 
 //------------------------------------------------
@@ -80,15 +80,22 @@ void EnemyStepOn::update()
 //EnemyKnockDown
 //------------------------------------------------
 
-// 初期設定	地面の高さを与える
-void EnemyKnockDown::setup(float fieldY)
+namespace
 {
-	m_fieldY = fieldY;
-	m_pos.x = Game::kScreenWidth - 32.0f;
-	m_pos.y = m_fieldY - m_graphSize.y;
+	//ジャンプ力
+	constexpr float kJumpAcc = -15.0f;
+	//重力
+	constexpr float kGravity = 1.0f;
+}
 
-	m_vec.x = kSpeed;
-	m_vec.y = 0.0f;
+// 初期設定	地面の高さを与える
+void EnemyKnockDown::setup(float posX)
+{
+	m_pos.x = m_colSize.x + posX;
+	m_pos.y = m_colSize.y;
+
+	m_vec.x = -kSpeed;
+	m_vec.y = kSpeed;
 }
 
 // 更新
@@ -102,9 +109,19 @@ void EnemyKnockDown::update()
 		m_vec.x *= -1.0f;
 		m_isRight = true;
 	}
-	if (m_pos.x > Game::kScreenWidth - 32.0f)
+	if (m_pos.x > Game::kScreenWidth - getRadius() * 2)
 	{
 		m_vec.x *= -1.0f;
+		m_isRight = false;
+	}
+	if (m_pos.y < 0)
+	{
+		m_vec.y *= -1.0f;
+		m_isRight = true;
+	}
+	if (m_pos.y > Game::kScreenHeight - getRadius() * 2)
+	{
+		m_vec.y *= -1.0f;
 		m_isRight = false;
 	}
 
@@ -114,26 +131,33 @@ void EnemyKnockDown::update()
 		m_isDead = true;
 	}
 }
-#if false
-bool EnemyKnockDown::isCol(Shot& shot)
+void EnemyKnockDown::draw()
 {
-	if (m_isDead)	return false;
-
-	float enemyLeft = getPos().x;
-	float enemyRight = getPos().x + m_colSize.x;
-	float enemyTop = getPos().y;
-	float enemyBottom = getPos().y + m_colSize.y;
-
-	float shotLeft = shot.getPos().x;
-	float shotRight = shot.getPos().x + shot.getColSize().x;
-	float shotTop = shot.getPos().y;
-	float shotBottom = shot.getPos().y + shot.getColSize().y;
-
-	if (enemyLeft > shotRight)	return false;//赤
-	if (enemyRight < shotLeft)	return false;//黄色
-	if (enemyTop > shotBottom)	return false;//緑
-	if (enemyBottom < shotTop)	return false;//青
-
-	return true;
+	EnemyBase::draw();
+	DrawCircle(static_cast<int>(getCenter().x), static_cast<int>(getCenter().y),
+		static_cast<int>(getRadius()), GetColor(255, 255, 255), false);
 }
-#endif
+float EnemyKnockDown::getRadius() const
+{
+	//画像の半径
+	return m_colSize.x / 2;
+}
+Vec2 EnemyKnockDown::getCenter() const
+{
+	//当たり判定の中心位置
+	Vec2 result = m_pos;
+	result.x += m_colSize.x / 2;
+	result.y += m_colSize.y / 2;
+
+	return result;
+}
+void EnemyKnockDown::bound(Vec2 targetPos)
+{
+	//反射方向
+	Vec2 boundDir = m_pos - targetPos;
+	//現在と同じ速度にする
+	float speed = m_vec.length();
+
+	//反射方向に現在の速度で移動する
+	m_vec = boundDir.normalize() * speed;
+}

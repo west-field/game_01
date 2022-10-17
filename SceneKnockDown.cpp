@@ -4,18 +4,15 @@
 #include "SceneTitle.h"
 #include <cassert>
 
-#include "ShotBound.h"
-#include "ShotNormal.h"
-#include "ShotSin.h"
+#include "shot.h"
 
 namespace
 {
 	//グラフィックファイル名
-	const char* const kPlayerGraphName = "data/playerKnockDown.bmp";
-	const char* const kEnemyGraphName = "data/enemyKnockDown.bmp";
+	const char* const kPlayerGraphName = "data/playerKnockDown_02.bmp";
+	const char* const kEnemyGraphName = "data/enemyKnockDown_01.bmp";
 	const char* const kShotGraphName = "data/shot.bmp";
-	// 地面の高さ
-	constexpr int kFieldY = Game::kScreenHeight - 64;
+
 	constexpr int kWaitTime = 60 * 4;
 	constexpr int kWaitFrame = 60 * 2;
 
@@ -25,7 +22,10 @@ namespace
 
 SceneKnockDown::SceneKnockDown()
 {
-	m_hPlayerGraph = -1;
+	for (auto& handle : m_hPlayerGraph)
+	{
+		handle = -1;
+	}
 	m_hEnemyGraph = -1;
 	m_hShotGraph = -1;
 
@@ -40,31 +40,48 @@ SceneKnockDown::SceneKnockDown()
 }
 void SceneKnockDown::init()
 {
-	m_hPlayerGraph = LoadGraph(kPlayerGraphName);
+	//グラフィック
 	m_hEnemyGraph = LoadGraph(kEnemyGraphName);
 	m_hShotGraph = LoadGraph(kShotGraphName);
-
-	m_player.setGraph(m_hPlayerGraph);
-	m_player.setup(kFieldY);
-	m_player.setScene(this);
-
-	m_enemy.setGraph(m_hEnemyGraph);
-	m_enemy.setup(kFieldY);
-
+	LoadDivGraph(kPlayerGraphName, PlayerKnockDown::kGraphicDivNum,
+		PlayerKnockDown::kGraphicDivX, PlayerKnockDown::kGraphicDivY,
+		PlayerKnockDown::kGraphicSizeX, PlayerKnockDown::kGraphicSizeY, m_hPlayerGraph);
+	//プレイヤー
+	for (int i = 0; i < PlayerKnockDown::kGraphicDivNum; i++)
+	{
+		m_player.setGraph(m_hPlayerGraph[i],i);
+	}
+	m_player.setup();
+	//エネミー
+	float posX = 0.0f;
+	for (auto& enemy : m_enemy)
+	{
+		enemy.setGraph(m_hEnemyGraph);
+		enemy.setup(posX);
+		posX += 80.0f;
+	}
+	//待ち時間
 	m_waitFrame = kWaitFrame;
 	m_waitTime = kWaitTime;
 	m_num = 3;
-
+	//フェード
 	m_fadeBright = 0;
 	m_fadeSpeed = 8;
 }
 void SceneKnockDown::end()
 {
 	//画像のアンロード
-	DeleteGraph(m_hPlayerGraph);
-	DeleteGraph(m_hEnemyGraph);
-	DeleteGraph(m_hShotGraph);
+	for (auto& handle : m_hPlayerGraph)
+	{
+		DeleteGraph(handle);
+	}
 
+	for (auto& enemy : m_enemy)
+	{
+		DeleteGraph(m_hEnemyGraph);
+	}
+	DeleteGraph(m_hShotGraph);
+	
 	for (auto& pShot : m_pShotVt)
 	{
 		assert(pShot);
@@ -89,9 +106,39 @@ SceneBase* SceneKnockDown::update()
 	}
 
 	m_player.update();
-	m_enemy.update();
+	for (auto& enemy : m_enemy)
+	{
+		enemy.update();
+	}
 
-	std::vector<ShotBase*>::iterator it = m_pShotVt.begin();
+	//enemyどうしの当たり判定
+	for (int i = 0; i < kEnemyNum; i++)
+	{
+		for (int j = i + 1; j < kEnemyNum; j++)
+		{
+			Vec2 dist = m_enemy[i].getCenter() - m_enemy[j].getCenter();
+			float radiusAdd = m_enemy[i].getRadius() + m_enemy[j].getRadius();
+			//当たった場合
+			if (dist.length() < radiusAdd)
+			{
+				m_enemy[i].bound(m_enemy[j].getCenter());
+				m_enemy[j].bound(m_enemy[i].getCenter());
+			}
+		}
+	}
+
+	//playerに当たったかどうか
+	for (int i = 0; i < kEnemyNum; i++)
+	{
+		Vec2 dist = m_enemy[i].getCenter() - m_player.getCenter();
+		float radiusAdd = m_enemy[i].getRadius() + m_player.getRadius();
+		//当たった場合
+		if (dist.length() < radiusAdd)
+		{
+			m_player.setDead(true);
+		}
+	}
+	std::vector<Shot*>::iterator it = m_pShotVt.begin();
 	while (it != m_pShotVt.end())
 	{
 		auto& pShot = (*it);
@@ -101,7 +148,7 @@ SceneBase* SceneKnockDown::update()
 			it++;
 			continue;//中身があるかどうか　nullptrの時continue
 		}
-		pShot->update();
+		pShot->update(m_player.getStartVec());
 		if (!pShot->isExist())
 		{
 			delete pShot;
@@ -114,20 +161,6 @@ SceneBase* SceneKnockDown::update()
 
 		it++;
 	}
-#if false
-	if (m_player.isCol(m_enemy))
-	{
-		m_player.setDead(true);
-		m_isSuccess = true;
-	}
-
-	if (m_enemy.isCol(m_shot))
-	{
-		m_enemy.setHit(true);
-		m_shot.setHit(true);
-	}
-
-#endif
 //クリアしたら画面を変更できる
 	if (m_isSuccess)
 	{
@@ -165,23 +198,24 @@ SceneBase* SceneKnockDown::update()
 void SceneKnockDown::draw()
 {
 	SetDrawBright(m_fadeBright, m_fadeBright, m_fadeBright);
-	DrawLine(0, kFieldY, Game::kScreenWidth, kFieldY, GetColor(255, 255, 255));
 	m_player.draw();
-	m_enemy.draw();
-
+	for (auto& enemy : m_enemy)
+	{
+		enemy.draw();
+	}
+	
 	for (auto& pShot : m_pShotVt)
 	{
 		if (!pShot)	continue;
 		pShot->draw();
 	}
-
 	//現在存在している弾の数を表示
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "弾の数:%d", m_pShotVt.size());
-
+	
 	if (m_waitFrame != 0)
 	{
 		DrawString(340, 200, "すべて倒せ", GetColor(255, 255, 255));
-		DrawString(200, 220, "←・→キーで移動 z(A)でジャンプ x(B)でショット", GetColor(255, 255, 255));
+		DrawString(200, 220, "←・→キーで移動 x(B)でショット", GetColor(255, 255, 255));
 	}
 	if (m_isSuccess)
 	{
@@ -189,29 +223,10 @@ void SceneKnockDown::draw()
 		DrawFormatString(300, 220, GetColor(255, 255, 255), "タイトルへ..%d", m_num);
 	}
 }
-
 //弾の生成
-bool SceneKnockDown::createShotNormal(Vec2 pos)
+bool SceneKnockDown::createShot(Vec2 pos)
 {
-	ShotNormal* pShot = new ShotNormal;
-	pShot->setHandle(m_hShotGraph);
-	pShot->start(pos);
-	m_pShotVt.push_back(pShot);
-
-	return true;
-}
-bool SceneKnockDown::createShotBound(Vec2 pos)
-{
-	ShotBound* pShot = new ShotBound;
-	pShot->setHandle(m_hShotGraph);
-	pShot->start(pos);
-	m_pShotVt.push_back(pShot);
-
-	return true;
-}
-bool SceneKnockDown::createShotSin(Vec2 pos)
-{
-	ShotSin* pShot = new ShotSin;
+	Shot* pShot = new Shot;
 	pShot->setHandle(m_hShotGraph);
 	pShot->start(pos);
 	m_pShotVt.push_back(pShot);

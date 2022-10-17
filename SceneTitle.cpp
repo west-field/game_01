@@ -5,6 +5,8 @@
 #include "SceneStepOn.h"
 #include "Pad.h"
 
+#include "SceneKnockDown.h"
+
 namespace
 {
 	const char* const kSelectionSoundName = "sound/selection.mp3";
@@ -36,7 +38,8 @@ SceneBase* SceneTitle::update()
 		//フェードアウトしきったら次のシーンへ
 		m_fadeBright = 0;
 		//StepOnに切り替え
-		return (new SceneStepOn);
+	//	return (new SceneStepOn);
+		return (new SceneKnockDown);
 	}
 
 	Pad::update();

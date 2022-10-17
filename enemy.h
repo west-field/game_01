@@ -7,7 +7,6 @@ public:
 	EnemyBase()
 	{
 		m_handle = -1;
-		m_fieldY = 0;
 		m_isHit = false;
 		m_isDead = false;
 		m_isRight = false;
@@ -17,7 +16,7 @@ public:
 	// グラフィックデータの設定	内部でサイズも取得する
 	virtual void setGraph(int handle);
 	// 初期設定
-	virtual void setup(float fieldY) {}
+	virtual void setup() {}
 
 	virtual void update(){}
 	virtual void draw();
@@ -41,8 +40,6 @@ protected:
 	Vec2 m_pos;
 	// ベクトル
 	Vec2 m_vec;
-	// 地面の高さ
-	float m_fieldY;
 	//当たったかどうか
 	int m_isHit;
 	bool m_isDead;
@@ -56,11 +53,12 @@ public:
 	EnemyStepOn()
 	{
 		m_hDamageSe = -1;
+		m_fieldY = 0;
 	}
 	virtual ~EnemyStepOn(){}
 	
 	// 初期設定
-	virtual void setup(float fieldY)override;
+	virtual void setup(float fieldY);
 	// 更新
 	virtual void update()override;
 
@@ -70,6 +68,8 @@ public:
 
 private:
 	int m_hDamageSe;
+	// 地面の高さ
+	float m_fieldY;
 };
 
 class EnemyKnockDown : public EnemyBase
@@ -77,19 +77,23 @@ class EnemyKnockDown : public EnemyBase
 public:
 	EnemyKnockDown(){}
 	virtual ~EnemyKnockDown(){}
+
 	// 初期設定
-	virtual void setup(float fieldY)override;
+	virtual void setup(float posX);
 	// 更新
 	virtual void update()override;
-
+	virtual void draw()override;
 	// 位置の取得
 	virtual Vec2 getPos() const { return m_pos; }
 	// サイズの取得
 	virtual Vec2 getColSize() const { return m_graphSize; }
+	
 public:
-#if false
-	// shotとの衝突判定
-	bool isCol(Shot& shot);
-#endif
+	//当たり判定の半径取得
+	float getRadius() const;
+	//当たり判定の中心位置取得
+	Vec2 getCenter() const;
+	//ほかの敵に当たった場合の反射処理
+	void bound(Vec2 targetPos);
 private:
 };

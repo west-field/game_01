@@ -75,6 +75,9 @@
     <ClCompile Include="ShotSin.cpp">
       <Filter>ソース ファイル\Shot</Filter>
     </ClCompile>
+    <ClCompile Include="shot.cpp">
+      <Filter>ソース ファイル\Shot</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h">
@@ -117,6 +120,9 @@
       <Filter>ヘッダー ファイル\Shot</Filter>
     </ClInclude>
     <ClInclude Include="ShotSin.h">
+      <Filter>ヘッダー ファイル\Shot</Filter>
+    </ClInclude>
+    <ClInclude Include="shot.h">
       <Filter>ヘッダー ファイル\Shot</Filter>
     </ClInclude>
   </ItemGroup>
