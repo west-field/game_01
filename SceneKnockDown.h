@@ -23,7 +23,7 @@ public:
 	virtual void draw() override;
 
 	//弾の生成
-	bool createShot(Vec2 pos);
+	bool createShot(Vec2 pos,Vec2 vec);
 private:
 	//プレイヤー
 	PlayerKnockDown m_player;
@@ -41,6 +41,7 @@ private:
 	int m_num;
 	//成功したかどうか
 	bool m_isSuccess;
+	bool m_isMis;
 	//フェード処理
 	int m_fadeBright;
 	//フェード速度

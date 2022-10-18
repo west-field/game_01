@@ -144,6 +144,7 @@ PlayerKnockDown::PlayerKnockDown()
 	}
 	m_animeNo = 0;
 	m_shotInterval = 0;
+	m_pMain = nullptr;
 }
 
 void PlayerKnockDown::setGraph(int handle, int index)
@@ -156,13 +157,13 @@ void PlayerKnockDown::setup()
 	m_pos.x = Game::kScreenWidth / 2 - kGraphicSizeX / 2;
 	m_pos.y = Game::kScreenHeight - kGraphicSizeY;
 
-	m_vec.x = 0.0f;
-	m_vec.y = 0.0f;
+	m_vec.x = kSpeed;
+	m_vec.y = kSpeed;
+	
+	m_startPos = m_pos;
 
 	m_shotVec.x = 0.0f;
-	m_shotVec.y = 0.0f;
-
-	m_startPos = getCenter();
+	m_shotVec.y = -kSpeed;
 
 	m_shotInterval = 0;
 }
@@ -170,8 +171,6 @@ void PlayerKnockDown::setup()
 void PlayerKnockDown::update()
 {
 	if (m_isDead)	return;
-
-	m_pos += m_vec;
 
 	// キー入力処理 左右に移動 ジャンプ
 	Pad::update();
@@ -217,7 +216,7 @@ void PlayerKnockDown::update()
 	{
 		if (Pad::isPress(PAD_INPUT_2))
 		{
-			if (m_pMain->createShot(getStartPos()))
+			if (m_pMain->createShot(m_startPos, m_shotVec))
 			{
 				m_shotInterval = kShotInterval;
 			}
@@ -228,48 +227,50 @@ void PlayerKnockDown::update()
 	//移動
 	if (Pad::isPress(PAD_INPUT_RIGHT))
 	{
-		m_shotVec.x = kSpeed;
+		m_pos.x += m_vec.x;
+		m_shotVec.x = m_vec.x;
 		m_shotVec.y = 0.0f;
 		if (m_pos.x > Game::kScreenWidth - getRadius() * 2)
 		{
 			m_pos.x = Game::kScreenWidth - getRadius() * 2;
 		}
 		m_animeNo = 3;
-		m_pos.x += kSpeed;
 	}
 	if (Pad::isPress(PAD_INPUT_LEFT))
 	{
-		m_shotVec.x = kSpeed;
+		m_pos.x -= m_vec.x;
+		m_shotVec.x = -m_vec.x;
 		m_shotVec.y = 0.0f;
 		if (m_pos.x < 0.0f)
 		{
 			m_pos.x = 0.0f;
 		}
 		m_animeNo = 2;
-		m_pos.x -= kSpeed;
 	}
 	if (Pad::isPress(PAD_INPUT_UP))
 	{
+		m_pos.y -= m_vec.y;
 		m_shotVec.x = 0.0f;
-		m_shotVec.y = kSpeed;
+		m_shotVec.y = -m_vec.y;
 		if (m_pos.y < 0.0f)
 		{
 			m_pos.y = 0.0f;
 		}
 		m_animeNo = 0;
-		m_pos.y -= kSpeed;
 	}
 	if (Pad::isPress(PAD_INPUT_DOWN))
 	{
+		m_pos.y += m_vec.y;
 		m_shotVec.x = 0.0f;
-		m_shotVec.y = kSpeed;
+		m_shotVec.y = m_vec.y;
 		if (m_pos.y > Game::kScreenHeight - getRadius() * 2)
 		{
 			m_pos.y = Game::kScreenHeight - getRadius() * 2;
 		}
 		m_animeNo = 1;
-		m_pos.y += kSpeed;
 	}
+
+	m_startPos = m_pos;
 }
 void PlayerKnockDown::draw()
 {

@@ -38,8 +38,8 @@ SceneBase* SceneTitle::update()
 		//フェードアウトしきったら次のシーンへ
 		m_fadeBright = 0;
 		//StepOnに切り替え
-	//	return (new SceneStepOn);
-		return (new SceneKnockDown);
+		return (new SceneStepOn);
+		//	return (new SceneKnockDown);
 	}
 
 	Pad::update();

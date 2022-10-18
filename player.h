@@ -25,6 +25,8 @@ public:
 	virtual Vec2 getPos() const { return m_pos; }
 	// サイズの取得
 	virtual Vec2 getColSize() const { return m_colSize; }
+	// 死亡設定
+	virtual void setDead(bool isDead) { m_isDead = isDead; }
 
 protected:
 	// グラフィックの幅と高さ
@@ -59,10 +61,6 @@ public:
 	virtual void update() override;
 
 	virtual void draw()override;
-	// 位置の取得
-	virtual Vec2 getPos() const { return m_pos; }
-	// サイズの取得
-	virtual Vec2 getColSize() const { return m_colSize; }
 public:
 	//ジャンプしたときの音を取得
 	void setJumpSe(int jumpSe) { m_hJumpSe = jumpSe; }
@@ -107,20 +105,14 @@ public:
 	virtual void update() override;
 	virtual void draw()override;
 
-	// 位置の取得
-	virtual Vec2 getPos() const { return m_pos; }
-	// サイズの取得
-	virtual Vec2 getColSize() const { return m_colSize; }
-
 public:
+	//SceneMainクラスのポインタ
+	void setMain(SceneKnockDown* pMain) { m_pMain = pMain; }
 	//当たり判定の半径取得
 	float getRadius() const;
 	//当たり判定の中心位置取得
 	Vec2 getCenter() const;
-	Vec2 getStartPos() const { return m_startPos; }
-	Vec2 getStartVec() const { return m_shotVec; }
-	// 死亡設定
-	void setDead(bool isDead) { m_isDead = isDead; }
+
 private:
 	//グラフィックハンドル
 	int m_handle[kGraphicDivNum];

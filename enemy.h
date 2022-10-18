@@ -14,16 +14,16 @@ public:
 	virtual ~EnemyBase(){}
 
 	// グラフィックデータの設定	内部でサイズも取得する
-	virtual void setGraph(int handle);
+	virtual void setGraph(int handle){}
 	// 初期設定
 	virtual void setup() {}
 
 	virtual void update(){}
-	virtual void draw();
+	virtual void draw(){}
 
 	// 当たったかどうか
 	virtual void setHit(bool isHit) { m_isHit = isHit; }
-
+	bool isDead() { return m_isDead;}
 	// 位置の取得
 	virtual Vec2 getPos() const { return m_pos; }
 	// サイズの取得
@@ -57,11 +57,13 @@ public:
 	}
 	virtual ~EnemyStepOn(){}
 	
+	// グラフィックデータの設定	内部でサイズも取得する
+	virtual void setGraph(int handle)override;
 	// 初期設定
 	virtual void setup(float fieldY);
 	// 更新
 	virtual void update()override;
-
+	virtual void draw()override;
 public:
 	//ダメージ音を取得
 	void setDamageSe(int damageSe) { m_hDamageSe = damageSe; }
@@ -78,6 +80,8 @@ public:
 	EnemyKnockDown(){}
 	virtual ~EnemyKnockDown(){}
 
+	// グラフィックデータの設定	内部でサイズも取得する
+	virtual void setGraph(int handle)override;
 	// 初期設定
 	virtual void setup(float posX);
 	// 更新

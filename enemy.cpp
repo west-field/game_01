@@ -9,38 +9,16 @@ namespace
 }
 
 //------------------------------------------------
-//EnemyBase
+//EnemyStepOn
 //------------------------------------------------
-
 // グラフィックデータの設定	内部でサイズも取得する
-void EnemyBase::setGraph(int handle)
+void EnemyStepOn::setGraph(int handle)
 {
 	m_handle = handle;
 	GetGraphSizeF(m_handle, &m_graphSize.x, &m_graphSize.y);
 	m_colSize.x = m_graphSize.x / 2;
 	m_colSize.y = m_graphSize.y;
 }
-// 描画
-void EnemyBase::draw()
-{
-	if (m_isDead)	return;
-	if (m_isRight)
-	{
-		DrawRectGraphF(m_pos.x, m_pos.y, 0, 0,
-			static_cast<int>(m_graphSize.x) / 2, static_cast<int>(m_graphSize.y),
-			m_handle, true, false);
-	}
-	else
-	{
-		DrawRectGraphF(m_pos.x, m_pos.y, static_cast<int>(m_graphSize.x) / 2, 0,
-			static_cast<int>(m_graphSize.x) / 2, static_cast<int>(m_graphSize.y),
-			m_handle, true, false);
-	}
-}
-//------------------------------------------------
-//EnemyStepOn
-//------------------------------------------------
-
 // 初期設定	地面の高さを与える
 void EnemyStepOn::setup(float fieldY)
 {
@@ -75,7 +53,23 @@ void EnemyStepOn::update()
 		m_isDead = true;
 	}
 }
-
+// 描画
+void EnemyStepOn::draw()
+{
+	if (m_isDead)	return;
+	if (m_isRight)
+	{
+		DrawRectGraphF(m_pos.x, m_pos.y, 0, 0,
+			static_cast<int>(m_graphSize.x) / 2, static_cast<int>(m_graphSize.y),
+			m_handle, true, false);
+	}
+	else
+	{
+		DrawRectGraphF(m_pos.x, m_pos.y, static_cast<int>(m_graphSize.x) / 2, 0,
+			static_cast<int>(m_graphSize.x) / 2, static_cast<int>(m_graphSize.y),
+			m_handle, true, false);
+	}
+}
 //------------------------------------------------
 //EnemyKnockDown
 //------------------------------------------------
@@ -87,7 +81,12 @@ namespace
 	//重力
 	constexpr float kGravity = 1.0f;
 }
-
+// グラフィックデータの設定	内部でサイズも取得する
+void EnemyKnockDown::setGraph(int handle)
+{
+	m_handle = handle;
+	GetGraphSizeF(m_handle, &m_graphSize.x, &m_graphSize.y);
+}
 // 初期設定	地面の高さを与える
 void EnemyKnockDown::setup(float posX)
 {
@@ -133,21 +132,22 @@ void EnemyKnockDown::update()
 }
 void EnemyKnockDown::draw()
 {
-	EnemyBase::draw();
+	if (m_isDead)	return;
+	DrawGraphF(m_pos.x, m_pos.y, m_handle, false);
 	DrawCircle(static_cast<int>(getCenter().x), static_cast<int>(getCenter().y),
-		static_cast<int>(getRadius()), GetColor(255, 255, 255), false);
+		static_cast<int>(getRadius()), GetColor(255, 0, 255), false);
 }
 float EnemyKnockDown::getRadius() const
 {
 	//画像の半径
-	return m_colSize.x / 2;
+	return m_graphSize.x / 2;
 }
 Vec2 EnemyKnockDown::getCenter() const
 {
 	//当たり判定の中心位置
 	Vec2 result = m_pos;
-	result.x += m_colSize.x / 2;
-	result.y += m_colSize.y / 2;
+	result.x += m_graphSize.x / 2;
+	result.y += m_graphSize.y / 2;
 
 	return result;
 }
