@@ -253,7 +253,7 @@ void SceneKnockDown::draw()
 		}
 		else
 		{
-			DrawFormatString(Game::kScreenWidth - 100, Game::kScreenHeight - 50,
+			DrawFormatString(Game::kScreenWidth - 150, Game::kScreenHeight - 50,
 				GetColor(255, 255, 255), "始まるまで..%d", m_time);
 		}
 	}
@@ -261,13 +261,13 @@ void SceneKnockDown::draw()
 	if (m_isSuccess)
 	{
 		DrawString(300, 200, "クリア！", GetColor(255, 255, 255));
-		DrawFormatString(300, 220, GetColor(255, 255, 255), "タイトルへ..%d", m_time);
+		DrawFormatString(300, 220, GetColor(255, 255, 255), "タイトルへ戻る..%d", m_time);
 	}
 	//ミスの時
 	else if(m_isMis)
 	{
 		DrawString(300, 200, "失敗", GetColor(255, 255, 255));
-		DrawFormatString(300, 220, GetColor(255, 255, 255), "タイトルへ..%d", m_time);
+		DrawFormatString(300, 220, GetColor(255, 255, 255), "タイトルへ戻る..%d", m_time);
 	}
 }
 //カウント

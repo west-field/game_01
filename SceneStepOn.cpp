@@ -125,7 +125,7 @@ void SceneStepOn::draw()
 		}
 		else
 		{
-			DrawFormatString(Game::kScreenWidth - 100, Game::kScreenHeight - 50,
+			DrawFormatString(Game::kScreenWidth - 150, Game::kScreenHeight - 50,
 				GetColor(255, 255, 255), "Žn‚Ü‚é‚Ü‚Å..%d", m_time);
 		}
 	}
