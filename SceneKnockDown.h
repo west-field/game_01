@@ -21,7 +21,9 @@ public:
 
 	virtual SceneBase* update() override;
 	virtual void draw() override;
-
+public:
+	//カウント
+	int count(int wait);
 	//弾の生成
 	bool createShot(Vec2 pos,Vec2 vec);
 private:
@@ -35,15 +37,7 @@ private:
 	int m_hPlayerGraph[PlayerKnockDown::kGraphicDivNum];
 	int m_hEnemyGraph;
 	int m_hShotGraph;
-	//移動開始までの待ち時間(フレーム数)
-	int m_waitFrame;
-	int m_waitTime;
-	int m_num;
-	//成功したかどうか
-	bool m_isSuccess;
-	bool m_isMis;
-	//フェード処理
-	int m_fadeBright;
-	//フェード速度
-	int m_fadeSpeed;
+	//サウンドハンドル
+	int m_hShotSound;
+	int m_hEnemySound;
 };

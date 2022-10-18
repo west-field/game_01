@@ -8,9 +8,9 @@ public:
 	Shot();
 	virtual ~Shot(){}
 
+	//グラフィックデータの設定
 	void setHandle(int handle) { m_handle = handle; }
-
-	//ショット開始
+	//ショット開始位置を
 	virtual void start(Vec2 pos, Vec2 vec);
 	// 更新
 	virtual void update();
@@ -19,6 +19,7 @@ public:
 
 	//存在するか
 	bool isExist() const { return m_isExist; }
+	//存在するかどうかの取得
 	void setExist(bool isExist) { m_isExist = isExist; }
 	//当たり判定の半径取得
 	float getRadius() const;
@@ -27,10 +28,11 @@ public:
 protected:
 	// グラフィックハンドル
 	int m_handle;
+	
 	// 表示位置
-	Vec2	m_pos;
+	Vec2 m_pos;
 	// 移動
-	Vec2	m_vec;
+	Vec2 m_vec;
 
 	//存在するか
 	bool m_isExist;

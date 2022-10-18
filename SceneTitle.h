@@ -22,5 +22,6 @@ private:
 	int m_fadeBright;
 	//フェード速度
 	int m_fadeSpeed;
+	//選択時のサウンド
 	int m_hSelectionSe;
 };

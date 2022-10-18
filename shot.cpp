@@ -4,7 +4,7 @@
 
 namespace
 {
-	//プレイヤーグラフィックサイズ
+	//グラフィックサイズ
 	static constexpr int kGraphicSizeX = 32;
 	static constexpr int kGraphicSizeY = 32;
 }
@@ -37,7 +37,7 @@ void Shot::update()
 	{
 		m_isExist = false;
 	}
-	if (m_pos.x < 0)
+	if (m_pos.x < 0 - (getCenter().x + getRadius()))
 	{
 		m_isExist = false;
 	}
@@ -45,7 +45,7 @@ void Shot::update()
 	{
 		m_isExist = false;
 	}
-	if (m_pos.y < 0)
+	if (m_pos.y < 0 - (getCenter().y + getRadius()))
 	{
 		m_isExist = false;
 	}

@@ -7,22 +7,23 @@ public:
 	EnemyBase()
 	{
 		m_handle = -1;
+		m_hDamageSe = -1;
 		m_isHit = false;
 		m_isDead = false;
 		m_isRight = false;
 	}
 	virtual ~EnemyBase(){}
 
-	// グラフィックデータの設定	内部でサイズも取得する
 	virtual void setGraph(int handle){}
-	// 初期設定
 	virtual void setup() {}
-
 	virtual void update(){}
 	virtual void draw(){}
 
+	//ダメージ音を取得
+	virtual void setDamageSe(int damageSe) { m_hDamageSe = damageSe; }
 	// 当たったかどうか
 	virtual void setHit(bool isHit) { m_isHit = isHit; }
+	//生死の取得
 	bool isDead() { return m_isDead;}
 	// 位置の取得
 	virtual Vec2 getPos() const { return m_pos; }
@@ -32,6 +33,8 @@ public:
 protected:
 	// グラフィックハンドル
 	int m_handle;
+	//ダメージ音
+	int m_hDamageSe;
 	// グラフィックの幅と高さ
 	Vec2 m_graphSize;
 	// 当たり判定の幅と高さ
@@ -42,17 +45,21 @@ protected:
 	Vec2 m_vec;
 	//当たったかどうか
 	int m_isHit;
+	//生死
 	bool m_isDead;
 	//右を向いているかどうか
 	bool m_isRight;
 };
 
+
+//-----------------------------------------------★
+//EnemyStepOn
+//------------------------------------------------
 class EnemyStepOn : public EnemyBase
 {
 public:
 	EnemyStepOn()
 	{
-		m_hDamageSe = -1;
 		m_fieldY = 0;
 	}
 	virtual ~EnemyStepOn(){}
@@ -63,17 +70,18 @@ public:
 	virtual void setup(float fieldY);
 	// 更新
 	virtual void update()override;
+	//表示
 	virtual void draw()override;
-public:
-	//ダメージ音を取得
-	void setDamageSe(int damageSe) { m_hDamageSe = damageSe; }
 
 private:
-	int m_hDamageSe;
 	// 地面の高さ
 	float m_fieldY;
 };
 
+
+//-----------------------------------------------★
+//EnemyKnockDown
+//------------------------------------------------
 class EnemyKnockDown : public EnemyBase
 {
 public:
@@ -86,11 +94,8 @@ public:
 	virtual void setup(float posX);
 	// 更新
 	virtual void update()override;
+	//表示
 	virtual void draw()override;
-	// 位置の取得
-	virtual Vec2 getPos() const { return m_pos; }
-	// サイズの取得
-	virtual Vec2 getColSize() const { return m_graphSize; }
 	
 public:
 	//当たり判定の半径取得

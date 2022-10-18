@@ -13,7 +13,7 @@ namespace
 	constexpr float kSpeed = 3.0f;
 }
 
-//------------------------------------------------
+//-----------------------------------------------★
 //PlayerStepOn
 //------------------------------------------------
 
@@ -52,7 +52,9 @@ void PlayerStepOn::update()
 	//プレイヤーの動き　地面についたらジャンプする
 	if (isField)
 	{
-		m_vec.y = kJumpAcc;//ジャンプ開始
+		//ジャンプ開始
+		m_vec.y = kJumpAcc;
+		//ジャンプ音を鳴らす
 		PlaySoundMem(m_hJumpSe, DX_PLAYTYPE_BACK, true);
 	}
 
@@ -80,10 +82,10 @@ void PlayerStepOn::update()
 
 }
 
-
 void PlayerStepOn::draw()
 {
 	if (m_isDead)	return;
+	//右を向いているときは右を向いた絵を表示する
 	if (m_isRight)
 	{
 		DrawRectGraphF(m_pos.x, m_pos.y, 0, 0,
@@ -100,6 +102,7 @@ void PlayerStepOn::draw()
 	}
 }
 
+//衝突判定
 bool PlayerStepOn::isCol(EnemyStepOn& enemy)
 {
 	if (m_isDead)	return false;
@@ -114,15 +117,17 @@ bool PlayerStepOn::isCol(EnemyStepOn& enemy)
 	float enemyTop = enemy.getPos().y;
 	float enemyBottom = enemy.getPos().y + enemy.getColSize().y;
 
+	//当たっていない
 	if (playerLeft > enemyRight)	return false;//赤
 	if (playerRight < enemyLeft)	return false;//黄色
 	if (playerTop > enemyBottom)	return false;//緑
 	if (playerBottom < enemyTop)	return false;//青
 
+	//当たった
 	return true;
 }
 
-//------------------------------------------------
+//-----------------------------------------------★
 //PlayerKnockDown
 //------------------------------------------------
 #include "SceneKnockDown.h"
@@ -143,6 +148,7 @@ PlayerKnockDown::PlayerKnockDown()
 		handle = -1;
 	}
 	m_animeNo = 0;
+	m_hShotSe = -1;
 	m_shotInterval = 0;
 	m_pMain = nullptr;
 }
@@ -175,41 +181,7 @@ void PlayerKnockDown::update()
 	// キー入力処理 左右に移動 ジャンプ
 	Pad::update();
 
-	/*
-	//ショットを撃つ処理
-	m_shotInterval--;
-	if (m_shotInterval < 0)	m_shotInterval = 0;
-
-	if (m_shotInterval <= 0 && m_isRight)
-	{
-		if (Pad::isPress(PAD_INPUT_2))
-		{
-			if (m_pScene->createShotNormal(m_startPos))
-			{
-				m_shotInterval = kShotInterval;
-			}
-			//PlaySoundMem(m_hShotSe, DX_PLAYTYPE_BACK, true);
-		}
-		if (Pad::isPress(PAD_INPUT_3))
-		{
-			if (m_pScene->createShotBound(m_startPos))
-			{
-				m_shotInterval = kShotInterval;
-			}
-			//PlaySoundMem(m_hShotSe, DX_PLAYTYPE_BACK, true);
-		}
-		if (Pad::isPress(PAD_INPUT_4))
-		{
-			if (m_pScene->createShotSin(m_startPos))
-			{
-				m_shotInterval = kShotInterval;
-			}
-			//PlaySoundMem(m_hShotSe, DX_PLAYTYPE_BACK, true);
-		}
-	}
-	*/
-	
-	//xでショット
+	//x(B)でショット
 	m_shotInterval--;
 	if (m_shotInterval < 0)	m_shotInterval = 0;
 	if (m_shotInterval <= 0)
@@ -220,7 +192,7 @@ void PlayerKnockDown::update()
 			{
 				m_shotInterval = kShotInterval;
 			}
-			//PlaySoundMem(m_hShotSe, DX_PLAYTYPE_BACK, true);
+//			PlaySoundMem(m_hShotSe, DX_PLAYTYPE_BACK, true);
 		}
 	}
 	
@@ -272,25 +244,20 @@ void PlayerKnockDown::update()
 
 	m_startPos = m_pos;
 }
+
 void PlayerKnockDown::draw()
 {
 	if (m_isDead)	return;
+	//方向に応じた絵を表示
 	DrawGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), m_handle[m_animeNo], true);
-
-	DrawFormatString(0, 20, GetColor(255, 255, 255), "player.x%3f y%3f", m_pos.x, m_pos.y);
-	DrawFormatString(0, 40, GetColor(255, 255, 255), "player.strt.x%3f y%3f", m_startPos.x,m_startPos.y);
-
-	DrawCircle(static_cast<int>(getCenter().x), static_cast<int>(getCenter().y),
-		static_cast<int>(getRadius()), GetColor(255, 255, 255), false);
 }
 
-//当たり判定の半径取得
 float PlayerKnockDown::getRadius() const
 {
 	//画像の半径
 	return kGraphicSizeX / 2;
 }
-//当たり判定の中心位置取得
+
 Vec2 PlayerKnockDown::getCenter() const
 {
 	//当たり判定の中心位置

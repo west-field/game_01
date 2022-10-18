@@ -12,13 +12,9 @@ public:
 	}
 	virtual ~PlayerBase(){}
 
-	// グラフィックデータの設定	内部でサイズも取得する
 	virtual void setGraph() {}
-	// 初期設定
 	virtual void setup(){}
-	//更新
 	virtual void update(){}
-	//表示
 	virtual void draw() {}
 
 	// 位置の取得
@@ -43,6 +39,9 @@ protected:
 	bool m_isDead;
 };
 
+//-----------------------------------------------★
+//PlayerStepOn
+//------------------------------------------------
 class PlayerStepOn : public PlayerBase
 {
 public:
@@ -54,29 +53,33 @@ public:
 	}
 	virtual ~PlayerStepOn(){}
 
+
+	// グラフィックデータの設定
 	virtual void setGraph(int handle);
 	// 初期設定	地面の高さを与える
 	virtual void setup(float fieldY);
 	//更新
 	virtual void update() override;
-
+	//表示
 	virtual void draw()override;
 public:
 	//ジャンプしたときの音を取得
 	void setJumpSe(int jumpSe) { m_hJumpSe = jumpSe; }
 	// enemyとの衝突判定
 	bool isCol(EnemyStepOn& enemy);
-	
-
 private:
+	//サウンド
 	int m_hJumpSe;
-	//グラフィックハンドル
+	//グラフィック
 	int m_handle;
 	//右を向いているかどうか
 	bool m_isRight;
-
 };
 
+
+//-----------------------------------------------★
+//PlayerKnockDown
+//------------------------------------------------
 #include "shot.h"
 class SceneKnockDown;
 
@@ -106,6 +109,8 @@ public:
 	virtual void draw()override;
 
 public:
+	//shot音を取得
+	void setShotSe(int shotSe) { m_hShotSe = shotSe; }
 	//SceneMainクラスのポインタ
 	void setMain(SceneKnockDown* pMain) { m_pMain = pMain; }
 	//当たり判定の半径取得
@@ -118,10 +123,15 @@ private:
 	int m_handle[kGraphicDivNum];
 	//表示する番号
 	int m_animeNo;
+	//音
+	int m_hShotSe;
 	//ショットが銃の位置から発射
 	Vec2 m_startPos;
 	//ショットの発射間隔
 	int m_shotInterval;
+
+	Vec2 m_upDown;
+	Vec2 m_rightLeft;
 
 	Shot m_shot;
 	Vec2 m_shotVec;

@@ -13,9 +13,9 @@ namespace
 	const char* const kEnemyGraphName = "data/enemyKnockDown.bmp";
 	const char* const kShotGraphName = "data/shot.bmp";
 
-	constexpr int kWaitTime = 60 * 4;
-	constexpr int kWaitFrame = 60 * 2;
-
+	//サウンドファイル名
+//	const char* const kEnemySoundName = "";
+//	const char* const kShotSoundName = "";
 	//ショットの発射間隔
 	constexpr int kShotInterval = 16;
 }
@@ -29,15 +29,8 @@ SceneKnockDown::SceneKnockDown()
 	m_hEnemyGraph = -1;
 	m_hShotGraph = -1;
 
-	m_waitFrame = 0;
-	m_waitTime = 0;
-	m_num = 0;
-
-	m_isSuccess = false;
-	m_isMis = false;
-
-	m_fadeBright = 0;
-	m_fadeSpeed = 0;
+	m_hShotSound = -1;
+	m_hEnemySound = -1;
 }
 void SceneKnockDown::init()
 {
@@ -47,12 +40,16 @@ void SceneKnockDown::init()
 	LoadDivGraph(kPlayerGraphName, PlayerKnockDown::kGraphicDivNum,
 		PlayerKnockDown::kGraphicDivX, PlayerKnockDown::kGraphicDivY,
 		PlayerKnockDown::kGraphicSizeX, PlayerKnockDown::kGraphicSizeY, m_hPlayerGraph);
+	//サウンド
+//	m_hEnemySound = LoadSoundMem(kEnemySoundName);
+//	m_hShotSound = LoadSoundMem(kShotSoundName);
 	//プレイヤー
 	for (int i = 0; i < PlayerKnockDown::kGraphicDivNum; i++)
 	{
 		m_player.setGraph(m_hPlayerGraph[i],i);
 	}
 	m_player.setup();
+//	m_player.setShotSe(m_hShotSound);
 	m_player.setMain(this);
 	//エネミー
 	float posX = 0.0f;
@@ -60,27 +57,30 @@ void SceneKnockDown::init()
 	{
 		enemy.setGraph(m_hEnemyGraph);
 		enemy.setup(posX);
+//		enemy.setDamageSe(m_hEnemySound);
 		posX += 80.0f;
 	}
 	//待ち時間
-	m_waitFrame = kWaitFrame;
-	m_waitTime = kWaitTime;
-	m_num = 3;
+	m_waitStart = kWaitStart;
+	m_waitEnd = kWaitEnd;
+	m_time = 3;
 	//フェード
 	m_fadeBright = 0;
 	m_fadeSpeed = 8;
 }
 void SceneKnockDown::end()
 {
-	//画像のアンロード
+	//画像,音のアンロード
 	for (auto& handle : m_hPlayerGraph)
 	{
 		DeleteGraph(handle);
 	}
-
+//		DeleteSoundMem(m_hEnemySound);
+	
 	for (auto& enemy : m_enemy)
 	{
 		DeleteGraph(m_hEnemyGraph);
+//		DeleteSoundMem(m_hShotSound);
 	}
 
 	DeleteGraph(m_hShotGraph);
@@ -95,6 +95,7 @@ void SceneKnockDown::end()
 
 SceneBase* SceneKnockDown::update()
 {
+	//画面のフェードイン
 	m_fadeBright += m_fadeSpeed;
 
 	if (m_fadeBright >= 255)
@@ -102,9 +103,11 @@ SceneBase* SceneKnockDown::update()
 		m_fadeBright = 255;
 		m_fadeSpeed = 0;
 	}
-	if (m_waitFrame > 0)
+	//ゲームが始めるまでの時間
+	if (m_waitStart > 0)
 	{
-		m_waitFrame--;
+		m_waitStart--;
+		m_time = count(m_waitStart);
 		return this;
 	}
 
@@ -141,6 +144,7 @@ SceneBase* SceneKnockDown::update()
 		if (dist.length() < radiusAdd)
 		{
 			m_player.setDead(true);
+			//ミス
 			m_isMis = true;
 		}
 	}
@@ -165,7 +169,7 @@ SceneBase* SceneKnockDown::update()
 		
 	}
 
-
+	//ショット生成
 	std::vector<Shot*>::iterator it = m_pShotVt.begin();
 	while (it != m_pShotVt.end())
 	{
@@ -190,7 +194,7 @@ SceneBase* SceneKnockDown::update()
 		it++;
 	}
 
-//クリアしたら画面を変更できる
+	//エネミーをすべて倒すとクリア
 	int num = 0;
 	for (int i = 0; i < kEnemyNum; i++)
 	{
@@ -201,33 +205,19 @@ SceneBase* SceneKnockDown::update()
 			m_isSuccess = true;
 		}
 	}
+	//クリア、ミスしたとき
 	if (m_isSuccess || m_isMis)
 	{
-		if (m_waitTime > 0)
+		//終わるまでの時間
+		if (m_waitEnd > 0)
 		{
-			m_waitTime--;
-
-			if (m_waitTime <= 60)
-			{
-				m_num = 0;
-			}
-			else if (m_waitTime <= 120)
-			{
-				m_num = 1;
-			}
-			else if (m_waitTime <= 180)
-			{
-				m_num = 2;
-			}
-			else if (m_waitTime <= 240)
-			{
-				m_num = 3;
-			}
-
+			m_waitEnd--;
+			m_time = count(m_waitEnd);
 			return this;
 		}
 		else
 		{
+			//タイトルに戻る
 			return (new SceneTitle);
 		}
 	}
@@ -236,6 +226,7 @@ SceneBase* SceneKnockDown::update()
 }
 void SceneKnockDown::draw()
 {
+	//フェード
 	SetDrawBright(m_fadeBright, m_fadeBright, m_fadeBright);
 	m_player.draw();
 	for (auto& enemy : m_enemy)
@@ -249,22 +240,58 @@ void SceneKnockDown::draw()
 		pShot->draw();
 	}
 	
-	if (m_waitFrame != 0)
+	//スタートまでの時間中に表示
+	if (m_waitStart != 0)
 	{
 		DrawString(340, 200, "すべて倒せ", GetColor(255, 255, 255));
 		DrawString(200, 220, "←・→キーで移動 x(B)でショット", GetColor(255, 255, 255));
+		//m_timeが0の時　スタートを表示
+		if (m_time <= 0)
+		{
+			DrawString(Game::kScreenWidth - 100, Game::kScreenHeight - 50,
+				"スタート!!", GetColor(255, 255, 255));
+		}
+		else
+		{
+			DrawFormatString(Game::kScreenWidth - 100, Game::kScreenHeight - 50,
+				GetColor(255, 255, 255), "始まるまで..%d", m_time);
+		}
 	}
+	//クリアの時
 	if (m_isSuccess)
 	{
-		DrawString(300, 200, "成功！", GetColor(255, 255, 255));
-		DrawFormatString(300, 220, GetColor(255, 255, 255), "タイトルへ..%d", m_num);
+		DrawString(300, 200, "クリア！", GetColor(255, 255, 255));
+		DrawFormatString(300, 220, GetColor(255, 255, 255), "タイトルへ..%d", m_time);
 	}
+	//ミスの時
 	else if(m_isMis)
 	{
 		DrawString(300, 200, "失敗", GetColor(255, 255, 255));
-		DrawFormatString(300, 220, GetColor(255, 255, 255), "タイトルへ..%d", m_num);
+		DrawFormatString(300, 220, GetColor(255, 255, 255), "タイトルへ..%d", m_time);
 	}
 }
+//カウント
+int SceneKnockDown::count(int wait)
+{
+	if (wait <= 60)
+	{
+		return 0;
+	}
+	else if (wait <= 120)
+	{
+		return 1;
+	}
+	else if (wait <= 180)
+	{
+		return 2;
+	}
+	else if (wait <= 240)
+	{
+		return 3;
+	}
+	return -1;
+}
+
 //弾の生成
 bool SceneKnockDown::createShot(Vec2 pos,Vec2 vec)
 {

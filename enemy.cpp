@@ -8,18 +8,20 @@ namespace
 	constexpr float kSpeed = -4.0f;
 }
 
-//------------------------------------------------
+//-----------------------------------------------★
 //EnemyStepOn
 //------------------------------------------------
-// グラフィックデータの設定	内部でサイズも取得する
+
 void EnemyStepOn::setGraph(int handle)
 {
+	//グラフィックデータ取得
 	m_handle = handle;
+	//サイズの取得
 	GetGraphSizeF(m_handle, &m_graphSize.x, &m_graphSize.y);
 	m_colSize.x = m_graphSize.x / 2;
 	m_colSize.y = m_graphSize.y;
 }
-// 初期設定	地面の高さを与える
+
 void EnemyStepOn::setup(float fieldY)
 {
 	m_fieldY = fieldY;
@@ -30,7 +32,6 @@ void EnemyStepOn::setup(float fieldY)
 	m_vec.y = 0.0f;
 }
 
-// 更新
 void EnemyStepOn::update()
 {
 	if (m_isDead)	return;
@@ -47,16 +48,20 @@ void EnemyStepOn::update()
 		m_isRight = false;
 	}
 
+	//当たったとき
 	if (m_isHit)
 	{
+		//音を鳴らして
 		PlaySoundMem(m_hDamageSe, DX_PLAYTYPE_BACK, true);
+		//死亡判定にする
 		m_isDead = true;
 	}
 }
-// 描画
+
 void EnemyStepOn::draw()
 {
 	if (m_isDead)	return;
+	//右を向いているときに右の絵を表示
 	if (m_isRight)
 	{
 		DrawRectGraphF(m_pos.x, m_pos.y, 0, 0,
@@ -70,10 +75,10 @@ void EnemyStepOn::draw()
 			m_handle, true, false);
 	}
 }
-//------------------------------------------------
+
+//-----------------------------------------------★
 //EnemyKnockDown
 //------------------------------------------------
-
 namespace
 {
 	//ジャンプ力
@@ -81,13 +86,14 @@ namespace
 	//重力
 	constexpr float kGravity = 1.0f;
 }
-// グラフィックデータの設定	内部でサイズも取得する
+
 void EnemyKnockDown::setGraph(int handle)
 {
 	m_handle = handle;
+	//サイズ取得
 	GetGraphSizeF(m_handle, &m_graphSize.x, &m_graphSize.y);
 }
-// 初期設定	地面の高さを与える
+
 void EnemyKnockDown::setup(float posX)
 {
 	m_pos.x = m_colSize.x + posX;
@@ -97,7 +103,6 @@ void EnemyKnockDown::setup(float posX)
 	m_vec.y = kSpeed;
 }
 
-// 更新
 void EnemyKnockDown::update()
 {
 	if (m_isDead)	return;
@@ -106,42 +111,39 @@ void EnemyKnockDown::update()
 	if (m_pos.x < 0)
 	{
 		m_vec.x *= -1.0f;
-		m_isRight = true;
 	}
 	if (m_pos.x > Game::kScreenWidth - getRadius() * 2)
 	{
 		m_vec.x *= -1.0f;
-		m_isRight = false;
 	}
 	if (m_pos.y < 0)
 	{
 		m_vec.y *= -1.0f;
-		m_isRight = true;
 	}
 	if (m_pos.y > Game::kScreenHeight - getRadius() * 2)
 	{
 		m_vec.y *= -1.0f;
-		m_isRight = false;
 	}
 
 	if (m_isHit)
 	{
-		//PlaySoundMem(m_hDamageSe, DX_PLAYTYPE_BACK, true);
+//		PlaySoundMem(m_hDamageSe, DX_PLAYTYPE_BACK, true);
 		m_isDead = true;
 	}
 }
+
 void EnemyKnockDown::draw()
 {
 	if (m_isDead)	return;
 	DrawGraphF(m_pos.x, m_pos.y, m_handle, false);
-	DrawCircle(static_cast<int>(getCenter().x), static_cast<int>(getCenter().y),
-		static_cast<int>(getRadius()), GetColor(255, 0, 255), false);
 }
+
 float EnemyKnockDown::getRadius() const
 {
 	//画像の半径
 	return m_graphSize.x / 2;
 }
+
 Vec2 EnemyKnockDown::getCenter() const
 {
 	//当たり判定の中心位置
@@ -151,6 +153,7 @@ Vec2 EnemyKnockDown::getCenter() const
 
 	return result;
 }
+
 void EnemyKnockDown::bound(Vec2 targetPos)
 {
 	//反射方向
