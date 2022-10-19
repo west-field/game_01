@@ -23,6 +23,8 @@ private:
 	//サウンド
 	int m_hPlayerSound;
 	int m_hEnemySound;
+	//背景
+	int m_hBackground;
 	//プレイヤー
 	PlayerStepOn m_player;
 	//エネミー

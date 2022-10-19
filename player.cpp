@@ -185,15 +185,12 @@ void PlayerKnockDown::update()
 	m_shotInterval--;
 	if (m_shotInterval < 0)	m_shotInterval = 0;
 	if (m_shotInterval <= 0)
-	{
-		if (Pad::isPress(PAD_INPUT_2))
+	{	
+		if (m_pMain->createShot(m_startPos, m_shotVec))
 		{
-			if (m_pMain->createShot(m_startPos, m_shotVec))
-			{
-				m_shotInterval = kShotInterval;
-			}
-//			PlaySoundMem(m_hShotSe, DX_PLAYTYPE_BACK, true);
+			m_shotInterval = kShotInterval;
 		}
+//		PlaySoundMem(m_hShotSe, DX_PLAYTYPE_BACK, true);
 	}
 	
 	//ˆÚ“®

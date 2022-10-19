@@ -13,6 +13,8 @@ namespace
 	const char* const kEnemySoundName = "sound/enemy_damage.mp3";
 	// 地面の高さ
 	constexpr int kFieldY = Game::kScreenHeight - 64;
+	//背景
+	const char* const kBackgroundName = "data/backgroundStepOn.bmp";
 }
 
 SceneStepOn::SceneStepOn()
@@ -22,6 +24,8 @@ SceneStepOn::SceneStepOn()
 
 	m_hPlayerSound = -1;
 	m_hEnemySound = -1;
+
+	m_hBackground = -1;
 }
 void SceneStepOn::init()
 {
@@ -31,6 +35,8 @@ void SceneStepOn::init()
 	//サウンド
 	m_hPlayerSound = LoadSoundMem(kPlayerSoundName);
 	m_hEnemySound = LoadSoundMem(kEnemySoundName);
+	//背景
+	m_hBackground = LoadGraph(kBackgroundName);
 	//player
 	m_player.setGraph(m_hPlayerGraph);
 	m_player.setup(kFieldY);
@@ -55,6 +61,8 @@ void SceneStepOn::end()
 	//サウンド削除
 	DeleteSoundMem(m_hPlayerSound);
 	DeleteSoundMem(m_hEnemySound);
+	//背景削除
+	DeleteGraph(m_hBackground);
 }
 
 SceneBase* SceneStepOn::update()
@@ -108,6 +116,7 @@ void SceneStepOn::draw()
 	//フェード
 	SetDrawBright(m_fadeBright, m_fadeBright, m_fadeBright);
 	// 地面の描画
+	DrawGraph(0, 0, m_hBackground, false);
 	DrawLine(0, kFieldY, Game::kScreenWidth, kFieldY, GetColor(255, 255, 255));
 	m_player.draw();
 	m_enemy.draw();
@@ -125,8 +134,8 @@ void SceneStepOn::draw()
 		}
 		else
 		{
-			DrawFormatString(Game::kScreenWidth - 150, Game::kScreenHeight - 50,
-				GetColor(255, 255, 255), "始まるまで..%d", m_time);
+			DrawFormatString(Game::kScreenWidth - 100, Game::kScreenHeight - 50,
+				GetColor(255, 255, 255), "..%d", m_time);
 		}
 	}
 	//クリアしたときに表示する文字

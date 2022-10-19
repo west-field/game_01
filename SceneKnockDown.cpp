@@ -243,7 +243,7 @@ void SceneKnockDown::draw()
 	//スタートまでの時間中に表示
 	if (m_waitStart != 0)
 	{
-		DrawString(340, 200, "すべて倒せ", GetColor(255, 255, 255));
+		DrawString(300, 200, "ホコリを駆逐せよ！！", GetColor(255, 255, 255));
 		DrawString(200, 220, "←・→キーで移動 x(B)でショット", GetColor(255, 255, 255));
 		//m_timeが0の時　スタートを表示
 		if (m_time <= 0)
