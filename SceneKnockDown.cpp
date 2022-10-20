@@ -316,7 +316,7 @@ void SceneKnockDown::draw()
 	//スタートまでの時間中に表示
 	if (m_waitTime != 0)
 	{
-		DrawString(200, 220, "←・→キーで移動 x(B)でショット", m_color);
+		DrawString(200, 220, "←・→キーで移動 (B)xでショット", m_color);
 		//m_timeが0の時　スタートを表示
 		if (m_time <= 0)
 		{
@@ -324,20 +324,20 @@ void SceneKnockDown::draw()
 		}
 		else
 		{
-			DrawFormatString(200, 240, m_color, "始まるまで..%d", m_time);
+			DrawFormatString(250, 240, m_color, "　%d", m_time);
 		}
 	}
 	//クリアの時
 	if (m_isSuccess)
 	{
-		DrawString(300, 200, "駆逐完了！", m_color);
-		DrawString(300, 220, "(BACK)Q  タイトルへ", m_color);
+		DrawString(270, 200, "駆逐完了！", m_color);
+		DrawString(220, 220, "(BACK)Q を押してタイトルへ", m_color);
 	}
 	//ミスの時
 	else if(m_isMis)
 	{
-		DrawString(300, 200, "駆逐失敗", m_color);
-		DrawString(300, 220, "(BACK)Q  タイトルへ", m_color);
+		DrawString(270, 200, "駆逐失敗", m_color);
+		DrawString(220, 220, "(BACK)Qを押してタイトルへ", m_color);
 	}
 }
 

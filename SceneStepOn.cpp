@@ -157,13 +157,13 @@ void SceneStepOn::draw()
 		}
 		else
 		{
-			DrawFormatString(200, 240, m_color, "..%d", m_time);
+			DrawFormatString(200, 240, m_color, "　%d", m_time);
 		}
 	}
 	//クリアしたときに表示する文字
 	if (m_isSuccess)
 	{
-		DrawString(200, 200, "成功！", m_color);
-		DrawString(200, 220,"(BACK)Q  タイトルへ", m_color);
+		DrawString(270, 200, "成功！", m_color);
+		DrawString(220, 220,"(BACK)Qを押してタイトルへ", m_color);
 	}
 }

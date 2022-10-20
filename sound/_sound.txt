@@ -2,8 +2,8 @@ bgmTitle
 selection
 
 bgmStepOn
-enemy_damage
-player_jump
+enemyDamage
+playerJump
 
 bgmKnockDown
 mis
@@ -11,3 +11,4 @@ success
 shot
 shotHit
 reflection
+
