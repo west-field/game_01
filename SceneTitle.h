@@ -8,8 +8,10 @@ public:
 	{
 		m_fadeBright = 0;
 		m_fadeSpeed = 0;
+
 		m_hSelectionSe = -1;
 		m_hBgmSound = -1;
+
 		m_selection = -1;
 	}
 	virtual ~SceneTitle(){}

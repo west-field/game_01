@@ -1,10 +1,9 @@
 #include "SceneKnockDown.h"
 #include "DxLib.h"
 #include "game.h"
+#include "Pad.h"
 #include "SceneTitle.h"
 #include <cassert>
-
-#include "shot.h"
 
 namespace
 {
@@ -14,14 +13,16 @@ namespace
 	const char* const kShotGraphName = "data/shot.bmp";				//ショット
 
 	//サウンドファイル名
-	const char* const kShotSoundName = "sound/shot.mp3";		//ショット
-	const char* const kShotHitSoundName = "sound/shotHit.mp3";	//ヒット
-	const char* const kBgmSoundName = "sound/bgmKnockDown.mp3";	//BGM
-	const char* const kSuccessSoundName = "sound/success.mp3";	//成功
-	const char* const kMisSoundName = "sound/mis.mp3";			//失敗
+	const char* const kShotSoundName = "sound/shot.mp3";			//ショット
+	const char* const kShotHitSoundName = "sound/shotHit.mp3";		//ヒット
+	const char* const kBgmSoundName = "sound/bgmKnockDown.mp3";		//BGM
+	const char* const kSuccessSoundName = "sound/success.mp3";		//成功
+	const char* const kMisSoundName = "sound/mis.mp3";				//失敗
+	const char* const kReflectionSoundName = "sound/reflection.mp3";//反射
 
 	//背景
 	const char* const kBackgroundName = "data/backgroundKnockDown.bmp";
+	
 	//ショットの発射間隔
 	constexpr int kShotInterval = 16;
 }
@@ -40,25 +41,29 @@ SceneKnockDown::SceneKnockDown()
 	m_hBgmSound = -1;
 	m_hSuccessSound = -1;
 	m_hMisSound = -1;
+	m_hReflectionSound = -1;
 
 	m_hBackground = -1;
 
 	m_color = 0;
+
+	m_count = 0;
 }
 void SceneKnockDown::init()
 {
 	//グラフィック
-	m_hEnemyGraph = LoadGraph(kEnemyGraphName);
-	m_hShotGraph = LoadGraph(kShotGraphName);
+	m_hEnemyGraph = LoadGraph(kEnemyGraphName);//エネミーグラフィック
+	m_hShotGraph = LoadGraph(kShotGraphName);//ショットグラフィック
 	LoadDivGraph(kPlayerGraphName, PlayerKnockDown::kGraphicDivNum,
 		PlayerKnockDown::kGraphicDivX, PlayerKnockDown::kGraphicDivY,
-		PlayerKnockDown::kGraphicSizeX, PlayerKnockDown::kGraphicSizeY, m_hPlayerGraph);
+		PlayerKnockDown::kGraphicSizeX, PlayerKnockDown::kGraphicSizeY, m_hPlayerGraph);//プレイヤーグラフィック
 	//サウンド
-	m_hShotSound = LoadSoundMem(kShotSoundName);
-	m_hEnemySound = LoadSoundMem(kShotHitSoundName);
-	m_hBgmSound = LoadSoundMem(kBgmSoundName);
-	m_hSuccessSound = LoadSoundMem(kSuccessSoundName);
-	m_hMisSound = LoadSoundMem(kMisSoundName);
+	m_hShotSound = LoadSoundMem(kShotSoundName);			//ショット
+	m_hEnemySound = LoadSoundMem(kShotHitSoundName);		//エネミー
+	m_hBgmSound = LoadSoundMem(kBgmSoundName);				//BGM
+	m_hSuccessSound = LoadSoundMem(kSuccessSoundName);		//成功
+	m_hMisSound = LoadSoundMem(kMisSoundName);				//失敗
+	m_hReflectionSound = LoadSoundMem(kReflectionSoundName);//反射
 	//背景
 	m_hBackground = LoadGraph(kBackgroundName);
 	//プレイヤー
@@ -76,25 +81,29 @@ void SceneKnockDown::init()
 		enemy.setGraph(m_hEnemyGraph);
 		enemy.setup(posX);
 		enemy.setDamageSe(m_hEnemySound);
+		enemy.setReflectionSe(m_hReflectionSound);
 		posX += 80.0f;
 	}
 	//待ち時間
 	m_waitStart = kWaitStart;
-	m_waitEnd = kWaitEnd;
 	m_time = 3;
 	//フェード
 	m_fadeBright = 0;
 	m_fadeSpeed = 8;
 	//色
 	m_color = GetColor(0, 0, 128);//ネイビー
-
+	//カウント
+	m_count = 0;
+	//Bgmを再生
 	PlaySoundMem(m_hBgmSound, DX_PLAYTYPE_LOOP, true);
 }
 void SceneKnockDown::end()
 {
+	//サウンドを止める
 	StopSoundMem(m_hShotSound);
 	StopSoundMem(m_hSuccessSound);
 	StopSoundMem(m_hMisSound);
+	StopSoundMem(m_hReflectionSound);
 
 	//画像,音のアンロード
 	for (auto& handle : m_hPlayerGraph)
@@ -107,6 +116,7 @@ void SceneKnockDown::end()
 	{
 		DeleteGraph(m_hEnemyGraph);
 		DeleteSoundMem(m_hEnemySound);
+		DeleteSoundMem(m_hReflectionSound);
 	}
 
 	DeleteGraph(m_hShotGraph);
@@ -140,6 +150,14 @@ SceneBase* SceneKnockDown::update()
 		m_waitStart--;
 		m_time = count(m_waitStart);
 		return this;
+	}
+
+	//フェードアウト
+	if ((m_fadeBright <= 0) && (m_fadeSpeed < 0))
+	{
+		//フェードアウトしきったら次のシーンへ
+		m_fadeBright = 0;
+		return (new SceneTitle);
 	}
 
 	m_player.update();
@@ -178,7 +196,6 @@ SceneBase* SceneKnockDown::update()
 			//ミス
 			m_isMis = true;
 			StopSoundMem(m_hBgmSound);
-			PlaySoundMem(m_hMisSound, DX_PLAYTYPE_BACK, true);
 		}
 	}
 	//shotとenemy当たったかどうか
@@ -223,7 +240,6 @@ SceneBase* SceneKnockDown::update()
 			it = m_pShotVt.erase(it);
 			continue;
 		}
-
 		it++;
 	}
 
@@ -237,33 +253,45 @@ SceneBase* SceneKnockDown::update()
 		{
 			m_isSuccess = true;
 			StopSoundMem(m_hBgmSound);
-			PlaySoundMem(m_hSuccessSound, DX_PLAYTYPE_BACK, true);
 		}
 	}
-	//クリア、ミスしたとき
-	if (m_isSuccess || m_isMis)
+	//音を一回だけ鳴らす
+	if (m_count == 0)
 	{
-		//終わるまでの時間
-		if (m_waitEnd > 0)
+		if (m_isSuccess)//成功時
 		{
-			m_waitEnd--;
-			m_time = count(m_waitEnd);
-			return this;
+			PlaySoundMem(m_hSuccessSound, DX_PLAYTYPE_BACK, true);
+			m_count++;
 		}
-		else
+		else if (m_isMis)//失敗時
 		{
-			//タイトルに戻る
-			return (new SceneTitle);
+			PlaySoundMem(m_hMisSound, DX_PLAYTYPE_BACK, true);
+			m_count++;
 		}
 	}
 
+	//クリア、ミスしたらボタンを押して画面を変更
+	Pad::update();
+	if (m_fadeSpeed == 0)
+	{
+		if (m_isSuccess || m_isMis)
+		{
+			if (Pad::isPress(PAD_INPUT_7))
+			{
+				m_fadeSpeed = -8;
+			}
+		}
+	}
 	return this;
 }
 void SceneKnockDown::draw()
 {
 	//フェード
 	SetDrawBright(m_fadeBright, m_fadeBright, m_fadeBright);
+
+	//背景を表示
 	DrawGraph(0, 0, m_hBackground, false);
+	
 	m_player.draw();
 	for (auto& enemy : m_enemy)
 	{
@@ -279,7 +307,6 @@ void SceneKnockDown::draw()
 	//スタートまでの時間中に表示
 	if (m_waitStart != 0)
 	{
-		DrawString(200, 200, "ホコリを駆逐せよ！！", m_color);
 		DrawString(200, 220, "←・→キーで移動 x(B)でショット", m_color);
 		//m_timeが0の時　スタートを表示
 		if (m_time <= 0)
@@ -295,13 +322,13 @@ void SceneKnockDown::draw()
 	if (m_isSuccess)
 	{
 		DrawString(300, 200, "駆逐完了！", m_color);
-		DrawFormatString(300, 220, m_color, "タイトルへ戻る..%d", m_time);
+		DrawString(300, 220, "(BACK)Q  タイトルへ", m_color);
 	}
 	//ミスの時
 	else if(m_isMis)
 	{
 		DrawString(300, 200, "駆逐失敗", m_color);
-		DrawFormatString(300, 220, m_color, "タイトルへ戻る..%d", m_time);
+		DrawString(300, 220, "(BACK)Q  タイトルへ", m_color);
 	}
 }
 //カウント

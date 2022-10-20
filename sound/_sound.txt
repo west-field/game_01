@@ -1,14 +1,13 @@
-bgmKnockDown
-bgmStepOn
 bgmTitle
+selection
 
+bgmStepOn
 enemy_damage
 player_jump
 
+bgmKnockDown
 mis
 success
-
-selection
-
 shot
 shotHit
+reflection

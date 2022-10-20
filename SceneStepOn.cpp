@@ -1,6 +1,7 @@
 #include "SceneStepOn.h"
 #include "DxLib.h"
 #include "game.h"
+#include "Pad.h"
 #include "SceneTitle.h"
 
 namespace
@@ -9,8 +10,8 @@ namespace
 	const char* const kPlayerGraphName = "data/playerStepOn.bmp";
 	const char* const kEnemyGraphName = "data/enemyStepOn.bmp";
 	//サウンドファイル名
-	const char* const kPlayerSoundName = "sound/player_jump.mp3";
-	const char* const kEnemySoundName = "sound/enemy_damage.mp3";
+	const char* const kPlayerSoundName = "sound/playerJump.mp3";
+	const char* const kEnemySoundName = "sound/enemyDamage.mp3";
 	const char* const kBgmSoundName = "sound/bgmStepOn.mp3";
 	// 地面の高さ
 	constexpr int kFieldY = Game::kScreenHeight - 64;
@@ -52,19 +53,20 @@ void SceneStepOn::init()
 	m_enemy.setDamageSe(m_hEnemySound);
 	//待ち時間
 	m_waitStart = kWaitStart;
-	m_waitEnd = kWaitEnd;
 	m_time = 3;
 	//フェード
 	m_fadeBright = 0;
 	m_fadeSpeed = 8;
-
+	//色
 	m_color = GetColor(255, 255, 255);//白
-
+	//BGMを再生
 	PlaySoundMem(m_hBgmSound, DX_PLAYTYPE_LOOP, true);
 }
 void SceneStepOn::end()
 {
+	//サウンドを止める
 	StopSoundMem(m_hPlayerSound);
+	StopSoundMem(m_hEnemySound);
 	StopSoundMem(m_hBgmSound);
 	//グラフィック削除
 	DeleteGraph(m_hPlayerGraph);
@@ -95,6 +97,14 @@ SceneBase* SceneStepOn::update()
 		return this;
 	}
 
+	//フェードアウト
+	if ((m_fadeBright <= 0) && (m_fadeSpeed < 0))
+	{
+		//フェードアウトしきったら次のシーンへ
+		m_fadeBright = 0;
+		return (new SceneTitle);
+	}
+
 	m_player.update();
 	m_enemy.update();
 	//当たり判定 playerがenemyを踏んだかどうか
@@ -104,22 +114,19 @@ SceneBase* SceneStepOn::update()
 		m_isSuccess = true;
 	}
 
-	//クリアしたら画面を変更できる
-	if (m_isSuccess)
+	//クリアしたらボタンを押して画面を変更
+	Pad::update();
+	if (m_fadeSpeed == 0)
 	{
-		//次に行くまでの待ち時間
-		if (m_waitEnd > 0)
+		if (m_isSuccess)
 		{
-			m_waitEnd--;
-			m_time = count(m_waitEnd);
-			return this;
-		}
-		else
-		{
-			//タイトル画面に行く
-			return (new SceneTitle);
+			if (Pad::isPress(PAD_INPUT_7))
+			{
+				m_fadeSpeed = -8;
+			}
 		}
 	}
+	
 
 	return this;
 }
@@ -136,23 +143,22 @@ void SceneStepOn::draw()
 	//始まるまでの時間中に表示する文字
 	if (m_waitStart != 0)
 	{
-		DrawString(340, 200, "踏みつけろ", m_color);
-		DrawString(300, 220, "←・→キーで移動", m_color);
+		DrawString(200, 220, "←・→キーで移動", m_color);
 		//m_timeが0の時　スタートを表示
 		if (m_time <= 0)
 		{
-			DrawString(300, 240,"スタート!!", m_color);
+			DrawString(200, 240,"スタート!!", m_color);
 		}
 		else
 		{
-			DrawFormatString(300, 240, m_color, "..%d", m_time);
+			DrawFormatString(200, 240, m_color, "..%d", m_time);
 		}
 	}
 	//クリアしたときに表示する文字
 	if (m_isSuccess)
 	{
-		DrawString(300, 200, "成功！", m_color);
-		DrawFormatString(300, 220, m_color,"タイトルへ..%d", m_time);
+		DrawString(200, 200, "成功！", m_color);
+		DrawString(200, 220,"(BACK)Q  タイトルへ", m_color);
 	}
 }
 //カウント

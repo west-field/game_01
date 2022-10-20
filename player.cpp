@@ -1,6 +1,6 @@
+#include "player.h"
 #include "DxLib.h"
 #include "game.h"
-#include "player.h"
 #include "Pad.h"
 
 namespace
@@ -9,7 +9,7 @@ namespace
 	constexpr float kJumpAcc = -15.0f;
 	//重力
 	constexpr float kGravity = 0.5f;
-	//速度
+	//移動速度
 	constexpr float kSpeed = 3.0f;
 }
 
@@ -21,6 +21,7 @@ namespace
 void PlayerStepOn::setGraph(int handle)
 {
 	m_handle = handle;
+	//サイズ取得
 	GetGraphSizeF(m_handle, &m_graphSize.x, &m_graphSize.y);
 	m_colSize.x = m_graphSize.x / 2;
 	m_colSize.y = m_graphSize.y;
@@ -28,10 +29,14 @@ void PlayerStepOn::setGraph(int handle)
 // 初期設定	地面の高さを与える
 void PlayerStepOn::setup(float fieldY)
 {
+	//地面
 	m_fieldY = fieldY;
+	
+	//初期位置
 	m_pos.x = 32.0f;
 	m_pos.y = m_fieldY - m_graphSize.y;
 
+	//移動
 	m_vec.x = 0.0f;
 	m_vec.y = 0.0f;
 }
@@ -49,7 +54,7 @@ void PlayerStepOn::update()
 		m_pos.y = m_fieldY - m_graphSize.y;
 		isField = true;
 	}
-	//プレイヤーの動き　地面についたらジャンプする
+	//プレイヤーの動き　地面についていたらジャンプする
 	if (isField)
 	{
 		//ジャンプ開始
@@ -62,7 +67,8 @@ void PlayerStepOn::update()
 	Pad::update();
 	if (Pad::isPress(PAD_INPUT_RIGHT))
 	{
-		m_isRight = true;
+		m_isRight = true;//右を向いている
+		//壁に当たったら止める
 		if (m_pos.x > Game::kScreenWidth - m_colSize.x)
 		{
 			m_pos.x = Game::kScreenWidth - m_colSize.x;
@@ -71,7 +77,8 @@ void PlayerStepOn::update()
 	}
 	if (Pad::isPress(PAD_INPUT_LEFT))
 	{
-		m_isRight = false;
+		m_isRight = false;//右を向いていない
+
 		if (m_pos.x < 0)
 		{
 			m_pos.x = 0;
@@ -107,14 +114,16 @@ bool PlayerStepOn::isCol(EnemyStepOn& enemy)
 {
 	if (m_isDead)	return false;
 
+	//プレイヤーの当たり判定 左、右、上、下
 	float playerLeft = getPos().x;
 	float playerRight = getPos().x + m_colSize.x;
 	float playerTop = getPos().y;
 	float playerBottom = getPos().y + m_colSize.y;
 
-	float enemyLeft = enemy.getPos().x - 5.0f;
-	float enemyRight = enemy.getPos().x + enemy.getColSize().x - 5.0f;
-	float enemyTop = enemy.getPos().y;
+	//エネミーの当たり判定
+	float enemyLeft = enemy.getPos().x + 5.0f;
+	float enemyRight = enemy.getPos().x + enemy.getColSize().x + 5.0f;
+	float enemyTop = enemy.getPos().y; + 2.0f;
 	float enemyBottom = enemy.getPos().y + enemy.getColSize().y;
 
 	//当たっていない
@@ -133,10 +142,6 @@ bool PlayerStepOn::isCol(EnemyStepOn& enemy)
 #include "SceneKnockDown.h"
 namespace
 {
-	// X方向、Y方向の最大速度
-	constexpr float kSpeedMax = 8.0f;
-	constexpr float kAcc = 0.4f;
-
 	//ショットの発射間隔
 	constexpr int kShotInterval = 20;
 }
@@ -147,9 +152,13 @@ PlayerKnockDown::PlayerKnockDown()
 	{
 		handle = -1;
 	}
+
 	m_animeNo = 0;
+
 	m_hShotSe = -1;
+
 	m_shotInterval = 0;
+
 	m_pMain = nullptr;
 }
 
@@ -160,17 +169,22 @@ void PlayerKnockDown::setGraph(int handle, int index)
 // 初期設定
 void PlayerKnockDown::setup()
 {
+	//初期位置
 	m_pos.x = Game::kScreenWidth / 2 - kGraphicSizeX / 2;
-	m_pos.y = Game::kScreenHeight - kGraphicSizeY;
+	m_pos.y = Game::kScreenHeight / 2;
 
+	//移動
 	m_vec.x = kSpeed;
 	m_vec.y = kSpeed;
 	
+	//ショットの発射位置
 	m_startPos = m_pos;
 
+	//ショット方向
 	m_shotVec.x = 0.0f;
 	m_shotVec.y = -kSpeed;
 
+	//ショット発射間隔
 	m_shotInterval = 0;
 }
 
@@ -178,25 +192,28 @@ void PlayerKnockDown::update()
 {
 	if (m_isDead)	return;
 
-	// キー入力処理 左右に移動 ジャンプ
 	Pad::update();
 
 	//x(B)でショット
 	m_shotInterval--;
 	if (m_shotInterval < 0)	m_shotInterval = 0;
+
+	//ショットの発射間隔が0になったときもう一度発射できる
 	if (m_shotInterval <= 0)
 	{
 		if (Pad::isPress(PAD_INPUT_2))
 		{
+			//弾を生成する
 			if (m_pMain->createShot(m_startPos, m_shotVec))
 			{
 				m_shotInterval = kShotInterval;
 			}
+			//ショット音を再生
 			PlaySoundMem(m_hShotSe, DX_PLAYTYPE_BACK, true);
 		}
 	}
 	
-	//移動
+	//移動 上下左右
 	if (Pad::isPress(PAD_INPUT_RIGHT))
 	{
 		m_pos.x += m_vec.x;

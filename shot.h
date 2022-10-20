@@ -9,8 +9,8 @@ public:
 	virtual ~Shot(){}
 
 	//グラフィックデータの設定
-	void setHandle(int handle) { m_handle = handle; }
-	//ショット開始位置を
+	void setHandle(int handle);
+	//ショット開始位置を取得
 	virtual void start(Vec2 pos, Vec2 vec);
 	// 更新
 	virtual void update();
@@ -28,7 +28,8 @@ public:
 protected:
 	// グラフィックハンドル
 	int m_handle;
-	
+	//グラフィックの幅と高さ
+	Vec2 m_graphSize;
 	// 表示位置
 	Vec2 m_pos;
 	// 移動

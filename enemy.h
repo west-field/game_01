@@ -85,7 +85,10 @@ private:
 class EnemyKnockDown : public EnemyBase
 {
 public:
-	EnemyKnockDown(){}
+	EnemyKnockDown()
+	{
+		m_hReflectionSe = -1;
+	}
 	virtual ~EnemyKnockDown(){}
 
 	// グラフィックデータの設定	内部でサイズも取得する
@@ -96,13 +99,20 @@ public:
 	virtual void update()override;
 	//表示
 	virtual void draw()override;
-	
 public:
+	//反射音取得
+	void setReflectionSe(int se) { m_hReflectionSe = se; }
+	//反射音再生
+	void sound();
+
 	//当たり判定の半径取得
 	float getRadius() const;
 	//当たり判定の中心位置取得
 	Vec2 getCenter() const;
+
 	//ほかの敵に当たった場合の反射処理
 	void bound(Vec2 targetPos);
 private:
+	//反射音
+	int m_hReflectionSe;
 };

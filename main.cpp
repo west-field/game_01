@@ -36,14 +36,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		//š— ‰æ–Ê‚ğ•\‰æ–Ê‚Æ“ü‚ê‘Ö‚¦‚é
 		ScreenFlip();
-		// Q(BACK)‚ğ‰Ÿ‚µ‚½‚çI—¹‚·‚é
+		// S(LB)‚ğ‰Ÿ‚µ‚½‚çI—¹‚·‚é
 		Pad::update();
-		if (Pad::isPress(PAD_INPUT_7))	break;
+		if (Pad::isPress(PAD_INPUT_5))	break;
 		//fps‚ğ60‚ÉŒÅ’è
-		while (GetNowHiPerformanceCount() - time < 16667)
-		{
-		}
-		
+		while (GetNowHiPerformanceCount() - time < 16667)	{}
 	}
 
 	scene.end();

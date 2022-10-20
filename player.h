@@ -68,7 +68,7 @@ public:
 	// enemyとの衝突判定
 	bool isCol(EnemyStepOn& enemy);
 private:
-	//サウンド
+	//ジャンプ音
 	int m_hJumpSe;
 	//グラフィック
 	int m_handle;
@@ -80,7 +80,7 @@ private:
 //-----------------------------------------------★
 //PlayerKnockDown
 //------------------------------------------------
-#include "shot.h"
+
 class SceneKnockDown;
 
 class PlayerKnockDown : public PlayerBase
@@ -89,7 +89,7 @@ public:
 	//定数定義
 
 	//プレイヤーグラフィック分割数
-	static constexpr int kGraphicDivX = 2;//static　プログラム開始時に作成される　プログラムが終了するまで確保される
+	static constexpr int kGraphicDivX = 2;
 	static constexpr int kGraphicDivY = 2;
 	static constexpr int kGraphicDivNum = kGraphicDivX * kGraphicDivY;
 
@@ -106,6 +106,7 @@ public:
 	virtual void setup();
 	//更新
 	virtual void update() override;
+	//表示
 	virtual void draw()override;
 
 public:
@@ -113,28 +114,26 @@ public:
 	void setShotSe(int shotSe) { m_hShotSe = shotSe; }
 	//SceneMainクラスのポインタ
 	void setMain(SceneKnockDown* pMain) { m_pMain = pMain; }
+
 	//当たり判定の半径取得
 	float getRadius() const;
 	//当たり判定の中心位置取得
 	Vec2 getCenter() const;
-
 private:
 	//グラフィックハンドル
 	int m_handle[kGraphicDivNum];
 	//表示する番号
 	int m_animeNo;
-	//音
+
+	//ショット音
 	int m_hShotSe;
-	//ショットが銃の位置から発射
-	Vec2 m_startPos;
 	//ショットの発射間隔
 	int m_shotInterval;
-
-	Vec2 m_upDown;
-	Vec2 m_rightLeft;
-
-	Shot m_shot;
+	//ショットが銃の位置から発射
+	Vec2 m_startPos;
+	//弾を発射する方向
 	Vec2 m_shotVec;
 
+	//スクリーンのポインタ
 	SceneKnockDown* m_pMain;
 };

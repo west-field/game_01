@@ -7,24 +7,29 @@
 
 namespace
 {
-	const char* const kSelectionSoundName = "sound/selection.mp3";
-	const char* const kBgmSoundName = "sound/bgmTitle.mp3";
+	//サウンド
+	const char* const kSelectionSoundName = "sound/selection.mp3";	//選択
+	const char* const kBgmSoundName = "sound/bgmTitle.mp3";			//BGM
 }
 
 void SceneTitle::init()
 {
+	//フェード
 	m_fadeBright = 0;
 	m_fadeSpeed = 8;
 	//サウンド取得
 	m_hSelectionSe = LoadSoundMem(kSelectionSoundName);
 	m_hBgmSound = LoadSoundMem(kBgmSoundName);
-	m_selection = 0;
 
+	m_selection = 0;
+	
+	//BGM再生
 	PlaySoundMem(m_hBgmSound, DX_PLAYTYPE_LOOP, true);
 }
 
 void SceneTitle::end()
 {
+	//サウンドを止める
 	StopSoundMem(m_hSelectionSe);
 	StopSoundMem(m_hBgmSound);
 	//削除
@@ -83,8 +88,7 @@ void SceneTitle::draw()
 	//フェード
 	SetDrawBright(m_fadeBright, m_fadeBright, m_fadeBright);//描画輝度をセット
 	//文字表示
-	DrawString(200, 100, "タイトル画面", GetColor(255, 255, 255));
-	DrawString(110, 300, " z(A) 踏みつけろ", GetColor(255, 255, 255));
-	DrawString(110, 340, " x(B) ホコリを駆逐せよ！！", GetColor(255, 255, 255));
-	DrawString(110, 380, " Q(BACK) 終了", GetColor(255, 255, 255));
+	DrawString(110, 100, " (A)z  踏みつけろ", GetColor(255, 255, 255));
+	DrawString(110, 200, " (B)x  ホコリを駆逐せよ！！", GetColor(255, 255, 255));
+	DrawString(110, 300, " (LB)s  終了", GetColor(255, 255, 255));
 }

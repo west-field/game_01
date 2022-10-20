@@ -18,12 +18,12 @@ public:
 	int count(int wait);
 private:
 	//グラフィックハンドル
-	int m_hPlayerGraph;
-	int m_hEnemyGraph;
+	int m_hPlayerGraph;	//プレイヤーグラフィック
+	int m_hEnemyGraph;	//エネミーグラフィック
 	//サウンド
-	int m_hPlayerSound;
-	int m_hEnemySound;
-	int m_hBgmSound;
+	int m_hPlayerSound;	//playerに渡す
+	int m_hEnemySound;	//enemyに渡す
+	int m_hBgmSound;	//BGM
 	//背景
 	int m_hBackground;
 	//カラー
