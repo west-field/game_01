@@ -9,13 +9,17 @@
 namespace
 {
 	//グラフィックファイル名
-	const char* const kPlayerGraphName = "data/playerKnockDown.bmp";
-	const char* const kEnemyGraphName = "data/enemyKnockDown.bmp";
-	const char* const kShotGraphName = "data/shot.bmp";
+	const char* const kPlayerGraphName = "data/playerKnockDown.bmp";//プレイヤー
+	const char* const kEnemyGraphName = "data/enemyKnockDown.bmp";	//エネミー
+	const char* const kShotGraphName = "data/shot.bmp";				//ショット
 
 	//サウンドファイル名
-	const char* const kShotSoundName = "sound/shot.mp3";
-	const char* const kShotHitSoundName = "sound/shotHit.mp3";
+	const char* const kShotSoundName = "sound/shot.mp3";		//ショット
+	const char* const kShotHitSoundName = "sound/shotHit.mp3";	//ヒット
+	const char* const kBgmSoundName = "sound/bgmKnockDown.mp3";	//BGM
+	const char* const kSuccessSoundName = "sound/success.mp3";	//成功
+	const char* const kMisSoundName = "sound/mis.mp3";			//失敗
+
 	//背景
 	const char* const kBackgroundName = "data/backgroundKnockDown.bmp";
 	//ショットの発射間隔
@@ -33,6 +37,9 @@ SceneKnockDown::SceneKnockDown()
 
 	m_hShotSound = -1;
 	m_hEnemySound = -1;
+	m_hBgmSound = -1;
+	m_hSuccessSound = -1;
+	m_hMisSound = -1;
 
 	m_hBackground = -1;
 
@@ -49,6 +56,9 @@ void SceneKnockDown::init()
 	//サウンド
 	m_hShotSound = LoadSoundMem(kShotSoundName);
 	m_hEnemySound = LoadSoundMem(kShotHitSoundName);
+	m_hBgmSound = LoadSoundMem(kBgmSoundName);
+	m_hSuccessSound = LoadSoundMem(kSuccessSoundName);
+	m_hMisSound = LoadSoundMem(kMisSoundName);
 	//背景
 	m_hBackground = LoadGraph(kBackgroundName);
 	//プレイヤー
@@ -77,9 +87,15 @@ void SceneKnockDown::init()
 	m_fadeSpeed = 8;
 	//色
 	m_color = GetColor(0, 0, 128);//ネイビー
+
+	PlaySoundMem(m_hBgmSound, DX_PLAYTYPE_LOOP, true);
 }
 void SceneKnockDown::end()
 {
+	StopSoundMem(m_hShotSound);
+	StopSoundMem(m_hSuccessSound);
+	StopSoundMem(m_hMisSound);
+
 	//画像,音のアンロード
 	for (auto& handle : m_hPlayerGraph)
 	{
@@ -95,6 +111,10 @@ void SceneKnockDown::end()
 
 	DeleteGraph(m_hShotGraph);
 	DeleteGraph(m_hBackground);
+
+	DeleteSoundMem(m_hBgmSound);
+	DeleteSoundMem(m_hSuccessSound);
+	DeleteSoundMem(m_hMisSound);
 
 	for (auto& pShot : m_pShotVt)
 	{
@@ -148,7 +168,7 @@ SceneBase* SceneKnockDown::update()
 	//playerとenemy当たったかどうか
 	for (int i = 0; i < kEnemyNum; i++)
 	{
-		if (m_enemy[i].isDead())	continue;
+		if (m_enemy[i].isDead() || m_player.isDead())	continue;
 		Vec2 dist = m_enemy[i].getCenter() - m_player.getCenter();
 		float radiusAdd = m_enemy[i].getRadius() + m_player.getRadius();
 		//当たった場合
@@ -157,6 +177,8 @@ SceneBase* SceneKnockDown::update()
 			m_player.setDead(true);
 			//ミス
 			m_isMis = true;
+			StopSoundMem(m_hBgmSound);
+			PlaySoundMem(m_hMisSound, DX_PLAYTYPE_BACK, true);
 		}
 	}
 	//shotとenemy当たったかどうか
@@ -214,6 +236,8 @@ SceneBase* SceneKnockDown::update()
 		if (num == kEnemyNum)
 		{
 			m_isSuccess = true;
+			StopSoundMem(m_hBgmSound);
+			PlaySoundMem(m_hSuccessSound, DX_PLAYTYPE_BACK, true);
 		}
 	}
 	//クリア、ミスしたとき

@@ -11,6 +11,7 @@ namespace
 	//サウンドファイル名
 	const char* const kPlayerSoundName = "sound/player_jump.mp3";
 	const char* const kEnemySoundName = "sound/enemy_damage.mp3";
+	const char* const kBgmSoundName = "sound/bgmStepOn.mp3";
 	// 地面の高さ
 	constexpr int kFieldY = Game::kScreenHeight - 64;
 	//背景
@@ -24,6 +25,7 @@ SceneStepOn::SceneStepOn()
 
 	m_hPlayerSound = -1;
 	m_hEnemySound = -1;
+	m_hBgmSound = -1;
 
 	m_hBackground = -1;
 
@@ -37,6 +39,7 @@ void SceneStepOn::init()
 	//サウンド
 	m_hPlayerSound = LoadSoundMem(kPlayerSoundName);
 	m_hEnemySound = LoadSoundMem(kEnemySoundName);
+	m_hBgmSound = LoadSoundMem(kBgmSoundName);
 	//背景
 	m_hBackground = LoadGraph(kBackgroundName);
 	//player
@@ -56,15 +59,20 @@ void SceneStepOn::init()
 	m_fadeSpeed = 8;
 
 	m_color = GetColor(255, 255, 255);//白
+
+	PlaySoundMem(m_hBgmSound, DX_PLAYTYPE_LOOP, true);
 }
 void SceneStepOn::end()
 {
+	StopSoundMem(m_hPlayerSound);
+	StopSoundMem(m_hBgmSound);
 	//グラフィック削除
 	DeleteGraph(m_hPlayerGraph);
 	DeleteGraph(m_hEnemyGraph);
 	//サウンド削除
 	DeleteSoundMem(m_hPlayerSound);
 	DeleteSoundMem(m_hEnemySound);
+	DeleteSoundMem(m_hBgmSound);
 	//背景削除
 	DeleteGraph(m_hBackground);
 }

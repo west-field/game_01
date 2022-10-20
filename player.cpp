@@ -138,7 +138,7 @@ namespace
 	constexpr float kAcc = 0.4f;
 
 	//ƒVƒ‡ƒbƒg‚Ì”­ŽËŠÔŠu
-	constexpr int kShotInterval = 16;
+	constexpr int kShotInterval = 20;
 }
 
 PlayerKnockDown::PlayerKnockDown()

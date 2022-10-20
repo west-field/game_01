@@ -8,6 +8,7 @@
 namespace
 {
 	const char* const kSelectionSoundName = "sound/selection.mp3";
+	const char* const kBgmSoundName = "sound/bgmTitle.mp3";
 }
 
 void SceneTitle::init()
@@ -16,13 +17,19 @@ void SceneTitle::init()
 	m_fadeSpeed = 8;
 	//サウンド取得
 	m_hSelectionSe = LoadSoundMem(kSelectionSoundName);
+	m_hBgmSound = LoadSoundMem(kBgmSoundName);
 	m_selection = 0;
+
+	PlaySoundMem(m_hBgmSound, DX_PLAYTYPE_LOOP, true);
 }
 
 void SceneTitle::end()
 {
+	StopSoundMem(m_hSelectionSe);
+	StopSoundMem(m_hBgmSound);
 	//削除
 	DeleteSoundMem(m_hSelectionSe);
+	DeleteSoundMem(m_hBgmSound);
 }
 
 SceneBase* SceneTitle::update()
@@ -59,7 +66,7 @@ SceneBase* SceneTitle::update()
 			//選択肢を選んだら音を鳴らす
 			PlaySoundMem(m_hSelectionSe, DX_PLAYTYPE_BACK, true);
 		}
-		if (Pad::isPress(PAD_INPUT_2))
+		else if (Pad::isPress(PAD_INPUT_2))
 		{
 			//フェードアウトするために取得
 			m_fadeSpeed = -8;

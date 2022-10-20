@@ -23,6 +23,7 @@ private:
 	//サウンド
 	int m_hPlayerSound;
 	int m_hEnemySound;
+	int m_hBgmSound;
 	//背景
 	int m_hBackground;
 	//カラー

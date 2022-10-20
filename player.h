@@ -23,7 +23,7 @@ public:
 	virtual Vec2 getColSize() const { return m_colSize; }
 	// 死亡設定
 	virtual void setDead(bool isDead) { m_isDead = isDead; }
-
+	virtual bool isDead() const { return m_isDead; }
 protected:
 	// グラフィックの幅と高さ
 	Vec2 m_graphSize;

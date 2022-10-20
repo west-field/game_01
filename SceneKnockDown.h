@@ -38,8 +38,11 @@ private:
 	int m_hEnemyGraph;
 	int m_hShotGraph;
 	//サウンドハンドル
-	int m_hShotSound;
-	int m_hEnemySound;
+	int m_hShotSound;	//ショット
+	int m_hEnemySound;	//エネミー
+	int m_hBgmSound;	//BGM
+	int m_hSuccessSound;//成功
+	int m_hMisSound;	//失敗
 	//背景
 	int m_hBackground;
 	//色
