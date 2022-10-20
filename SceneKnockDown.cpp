@@ -257,7 +257,7 @@ SceneBase* SceneKnockDown::update()
 	{
 		if (!m_enemy[i].isDead())	continue;
 		num++;
-		if (num == kEnemyNum)
+		if (num == kEnemyNum && !m_isMis)
 		{
 			m_isSuccess = true;
 			StopSoundMem(m_hBgmSound);
@@ -316,15 +316,15 @@ void SceneKnockDown::draw()
 	//スタートまでの時間中に表示
 	if (m_waitTime != 0)
 	{
-		DrawString(200, 220, "←・→キーで移動 (B)xでショット", m_color);
+		DrawString(200, 220, "十字キーで移動 (B)xでショット", m_color);
 		//m_timeが0の時　スタートを表示
 		if (m_time <= 0)
 		{
-			DrawString(200, 240,"スタート!!", m_color);
+			DrawString(Game::kScreenWidth / 2 - 50, 240,"スタート!!", m_color);
 		}
 		else
 		{
-			DrawFormatString(250, 240, m_color, "　%d", m_time);
+			DrawFormatString(Game::kScreenWidth / 2, 240, m_color, "%d", m_time);
 		}
 	}
 	//クリアの時

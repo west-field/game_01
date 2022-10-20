@@ -171,7 +171,7 @@ void PlayerKnockDown::setup()
 {
 	//‰ŠúˆÊ’u
 	m_pos.x = Game::kScreenWidth / 2 - kGraphicSizeX / 2;
-	m_pos.y = Game::kScreenHeight / 2;
+	m_pos.y = Game::kScreenHeight / 2 + kGraphicSizeY;
 
 	//ˆÚ“®
 	m_vec.x = kSpeed;
