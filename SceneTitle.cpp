@@ -1,6 +1,6 @@
+#include "SceneTitle.h"
 #include "DxLib.h"
 #include "game.h"
-#include "SceneTitle.h"
 #include "SceneStepOn.h"
 #include "SceneKnockDown.h"
 #include "Pad.h"

@@ -7,12 +7,12 @@
 namespace
 {
 	//グラフィックファイル名
-	const char* const kPlayerGraphName = "data/playerStepOn.bmp";
-	const char* const kEnemyGraphName = "data/enemyStepOn.bmp";
+	const char* const kPlayerGraphName = "data/playerStepOn.bmp";	//プレイヤーグラフィック
+	const char* const kEnemyGraphName = "data/enemyStepOn.bmp";		//エネミーグラフィック
 	//サウンドファイル名
-	const char* const kPlayerSoundName = "sound/playerJump.mp3";
-	const char* const kEnemySoundName = "sound/enemyDamage.mp3";
-	const char* const kBgmSoundName = "sound/bgmStepOn.mp3";
+	const char* const kPlayerSoundName = "sound/playerJump.mp3";	//プレイヤー
+	const char* const kEnemySoundName = "sound/enemyDamage.mp3";	//エネミー
+	const char* const kBgmSoundName = "sound/bgmStepOn.mp3";		//BGM
 	// 地面の高さ
 	constexpr int kFieldY = Game::kScreenHeight - 64;
 	//背景
@@ -23,12 +23,11 @@ SceneStepOn::SceneStepOn()
 {
 	m_hPlayerGraph = -1;
 	m_hEnemyGraph = -1;
+	m_hBackground = -1;
 
 	m_hPlayerSound = -1;
 	m_hEnemySound = -1;
 	m_hBgmSound = -1;
-
-	m_hBackground = -1;
 
 	m_color = 0;
 }
@@ -37,28 +36,34 @@ void SceneStepOn::init()
 	//グラフィック
 	m_hPlayerGraph = LoadGraph(kPlayerGraphName);
 	m_hEnemyGraph = LoadGraph(kEnemyGraphName);
+	m_hBackground = LoadGraph(kBackgroundName);
+
 	//サウンド
 	m_hPlayerSound = LoadSoundMem(kPlayerSoundName);
 	m_hEnemySound = LoadSoundMem(kEnemySoundName);
 	m_hBgmSound = LoadSoundMem(kBgmSoundName);
-	//背景
-	m_hBackground = LoadGraph(kBackgroundName);
+	
 	//player
 	m_player.setGraph(m_hPlayerGraph);
 	m_player.setup(kFieldY);
 	m_player.setJumpSe(m_hPlayerSound);
+	
 	//enemy
 	m_enemy.setGraph(m_hEnemyGraph);
 	m_enemy.setup(kFieldY);
 	m_enemy.setDamageSe(m_hEnemySound);
+	
 	//待ち時間
-	m_waitStart = kWaitStart;
+	m_waitTime = kWaitTime;
 	m_time = 3;
+	
 	//フェード
 	m_fadeBright = 0;
 	m_fadeSpeed = 8;
+	
 	//色
 	m_color = GetColor(255, 255, 255);//白
+	
 	//BGMを再生
 	PlaySoundMem(m_hBgmSound, DX_PLAYTYPE_LOOP, true);
 }
@@ -68,15 +73,16 @@ void SceneStepOn::end()
 	StopSoundMem(m_hPlayerSound);
 	StopSoundMem(m_hEnemySound);
 	StopSoundMem(m_hBgmSound);
+
 	//グラフィック削除
 	DeleteGraph(m_hPlayerGraph);
 	DeleteGraph(m_hEnemyGraph);
+	DeleteGraph(m_hBackground);
+
 	//サウンド削除
 	DeleteSoundMem(m_hPlayerSound);
 	DeleteSoundMem(m_hEnemySound);
 	DeleteSoundMem(m_hBgmSound);
-	//背景削除
-	DeleteGraph(m_hBackground);
 }
 
 SceneBase* SceneStepOn::update()
@@ -90,10 +96,12 @@ SceneBase* SceneStepOn::update()
 		m_fadeSpeed = 0;
 	}
 	//ゲームが始まるまでの時間
-	if (m_waitStart > 0)
+	if (m_waitTime > 0)
 	{
-		m_waitStart--;
-		m_time = count(m_waitStart);
+		m_waitTime--;
+		
+		m_time = m_waitTime / 60;
+		
 		return this;
 	}
 
@@ -126,8 +134,6 @@ SceneBase* SceneStepOn::update()
 			}
 		}
 	}
-	
-
 	return this;
 }
 void SceneStepOn::draw()
@@ -141,7 +147,7 @@ void SceneStepOn::draw()
 	m_enemy.draw();
 
 	//始まるまでの時間中に表示する文字
-	if (m_waitStart != 0)
+	if (m_waitTime != 0)
 	{
 		DrawString(200, 220, "←・→キーで移動", m_color);
 		//m_timeが0の時　スタートを表示
@@ -160,25 +166,4 @@ void SceneStepOn::draw()
 		DrawString(200, 200, "成功！", m_color);
 		DrawString(200, 220,"(BACK)Q  タイトルへ", m_color);
 	}
-}
-//カウント
-int SceneStepOn::count(int wait)
-{
-	if (wait <= 60)
-	{
-		return 0;
-	}
-	else if (wait <= 120)
-	{
-		return 1;
-	}
-	else if (wait <= 180)
-	{
-		return 2;
-	}
-	else if (wait <= 240)
-	{
-		return 3;
-	}
-	return -1;
 }

@@ -4,7 +4,7 @@ class SceneBase
 {
 public:
 	//始まるまでの時間
-	int const kWaitStart = 60 * 3;
+	int const kWaitTime = 60 * 4;
 public:
 	SceneBase();
 	virtual ~SceneBase(){}
@@ -16,7 +16,7 @@ public:
 	virtual void draw(){}
 protected:
 	//移動開始までの待ち時間(フレーム数)
-	int m_waitStart;
+	int m_waitTime;
 	//時間を表示
 	int m_time;
 	//成功したかどうか

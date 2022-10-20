@@ -22,9 +22,7 @@ public:
 
 	virtual SceneBase* update() override;
 	virtual void draw() override;
-public:
-	//カウント
-	int count(int wait);
+
 	//弾の生成
 	bool createShot(Vec2 pos,Vec2 vec);
 private:
@@ -32,6 +30,8 @@ private:
 	int m_hPlayerGraph[PlayerKnockDown::kGraphicDivNum];//プレイヤー
 	int m_hEnemyGraph;		//エネミーグラフィック
 	int m_hShotGraph;		//ショットグラフィック
+	int m_hBackground;		//背景
+
 	//サウンドハンドル
 	int m_hShotSound;		//ショット
 	int m_hEnemySound;		//エネミー
@@ -39,8 +39,7 @@ private:
 	int m_hSuccessSound;	//成功
 	int m_hMisSound;		//失敗
 	int m_hReflectionSound;	//反射
-	//背景
-	int m_hBackground;
+
 	//色
 	int m_color;
 	//カウント
