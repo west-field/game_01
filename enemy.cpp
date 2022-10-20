@@ -127,7 +127,7 @@ void EnemyKnockDown::update()
 
 	if (m_isHit)
 	{
-//		PlaySoundMem(m_hDamageSe, DX_PLAYTYPE_BACK, true);
+		PlaySoundMem(m_hDamageSe, DX_PLAYTYPE_BACK, true);
 		m_isDead = true;
 	}
 }
@@ -135,7 +135,7 @@ void EnemyKnockDown::update()
 void EnemyKnockDown::draw()
 {
 	if (m_isDead)	return;
-	DrawGraphF(m_pos.x, m_pos.y, m_handle, false);
+	DrawGraphF(m_pos.x, m_pos.y, m_handle, true);
 }
 
 float EnemyKnockDown::getRadius() const

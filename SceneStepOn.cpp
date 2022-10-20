@@ -1,7 +1,7 @@
 #include "SceneStepOn.h"
 #include "DxLib.h"
 #include "game.h"
-#include "SceneKnockDown.h"
+#include "SceneTitle.h"
 
 namespace
 {
@@ -26,6 +26,8 @@ SceneStepOn::SceneStepOn()
 	m_hEnemySound = -1;
 
 	m_hBackground = -1;
+
+	m_color = 0;
 }
 void SceneStepOn::init()
 {
@@ -52,6 +54,8 @@ void SceneStepOn::init()
 	//フェード
 	m_fadeBright = 0;
 	m_fadeSpeed = 8;
+
+	m_color = GetColor(255, 255, 255);//白
 }
 void SceneStepOn::end()
 {
@@ -85,7 +89,7 @@ SceneBase* SceneStepOn::update()
 
 	m_player.update();
 	m_enemy.update();
-	//当たり判定 playerがenemyに上から当たったかどうか
+	//当たり判定 playerがenemyを踏んだかどうか
 	if (m_player.isCol(m_enemy))
 	{
 		m_enemy.setHit(true);
@@ -104,8 +108,8 @@ SceneBase* SceneStepOn::update()
 		}
 		else
 		{
-			//次の画面に行く
-			return (new SceneKnockDown);
+			//タイトル画面に行く
+			return (new SceneTitle);
 		}
 	}
 
@@ -115,34 +119,32 @@ void SceneStepOn::draw()
 {
 	//フェード
 	SetDrawBright(m_fadeBright, m_fadeBright, m_fadeBright);
-	// 地面の描画
+	//背景
 	DrawGraph(0, 0, m_hBackground, false);
-	DrawLine(0, kFieldY, Game::kScreenWidth, kFieldY, GetColor(255, 255, 255));
+	
 	m_player.draw();
 	m_enemy.draw();
 
 	//始まるまでの時間中に表示する文字
 	if (m_waitStart != 0)
 	{
-		DrawString(340, 200, "ふめ", GetColor(255, 255, 255));
-		DrawString(300, 220, "←・→キーで移動", GetColor(255, 255, 255));
+		DrawString(340, 200, "踏みつけろ", m_color);
+		DrawString(300, 220, "←・→キーで移動", m_color);
 		//m_timeが0の時　スタートを表示
 		if (m_time <= 0)
 		{
-			DrawString(Game::kScreenWidth - 100, Game::kScreenHeight - 50,
-				"スタート!!", GetColor(255, 255, 255));
+			DrawString(300, 240,"スタート!!", m_color);
 		}
 		else
 		{
-			DrawFormatString(Game::kScreenWidth - 100, Game::kScreenHeight - 50,
-				GetColor(255, 255, 255), "..%d", m_time);
+			DrawFormatString(300, 240, m_color, "..%d", m_time);
 		}
 	}
 	//クリアしたときに表示する文字
 	if (m_isSuccess)
 	{
-		DrawString(300, 200, "成功！", GetColor(255, 255, 255));
-		DrawFormatString(300, 220, GetColor(255, 255, 255),"次へ..%d", m_time);
+		DrawString(300, 200, "成功！", m_color);
+		DrawFormatString(300, 220, m_color,"タイトルへ..%d", m_time);
 	}
 }
 //カウント

@@ -40,4 +40,8 @@ private:
 	//サウンドハンドル
 	int m_hShotSound;
 	int m_hEnemySound;
+	//背景
+	int m_hBackground;
+	//色
+	int m_color;
 };

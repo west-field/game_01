@@ -1,5 +1,6 @@
 #include "DxLib.h"
 #include "game.h"
+#include "Pad.h"
 #include "SceneManager.h"
 
 // プログラムは WinMain から始まります
@@ -35,8 +36,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		//★裏画面を表画面と入れ替える
 		ScreenFlip();
-		//escキーを押したら終了する
-		if (CheckHitKey(KEY_INPUT_ESCAPE))	break;
+		// Q(BACK)を押したら終了する
+		Pad::update();
+		if (Pad::isPress(PAD_INPUT_7))	break;
 		//fpsを60に固定
 		while (GetNowHiPerformanceCount() - time < 16667)
 		{

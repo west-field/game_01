@@ -14,8 +14,10 @@ namespace
 	const char* const kShotGraphName = "data/shot.bmp";
 
 	//サウンドファイル名
-//	const char* const kEnemySoundName = "";
-//	const char* const kShotSoundName = "";
+	const char* const kShotSoundName = "sound/shot.mp3";
+	const char* const kShotHitSoundName = "sound/shotHit.mp3";
+	//背景
+	const char* const kBackgroundName = "data/backgroundKnockDown.bmp";
 	//ショットの発射間隔
 	constexpr int kShotInterval = 16;
 }
@@ -31,6 +33,10 @@ SceneKnockDown::SceneKnockDown()
 
 	m_hShotSound = -1;
 	m_hEnemySound = -1;
+
+	m_hBackground = -1;
+
+	m_color = 0;
 }
 void SceneKnockDown::init()
 {
@@ -41,15 +47,17 @@ void SceneKnockDown::init()
 		PlayerKnockDown::kGraphicDivX, PlayerKnockDown::kGraphicDivY,
 		PlayerKnockDown::kGraphicSizeX, PlayerKnockDown::kGraphicSizeY, m_hPlayerGraph);
 	//サウンド
-//	m_hEnemySound = LoadSoundMem(kEnemySoundName);
-//	m_hShotSound = LoadSoundMem(kShotSoundName);
+	m_hShotSound = LoadSoundMem(kShotSoundName);
+	m_hEnemySound = LoadSoundMem(kShotHitSoundName);
+	//背景
+	m_hBackground = LoadGraph(kBackgroundName);
 	//プレイヤー
 	for (int i = 0; i < PlayerKnockDown::kGraphicDivNum; i++)
 	{
 		m_player.setGraph(m_hPlayerGraph[i],i);
 	}
 	m_player.setup();
-//	m_player.setShotSe(m_hShotSound);
+	m_player.setShotSe(m_hShotSound);
 	m_player.setMain(this);
 	//エネミー
 	float posX = 0.0f;
@@ -57,7 +65,7 @@ void SceneKnockDown::init()
 	{
 		enemy.setGraph(m_hEnemyGraph);
 		enemy.setup(posX);
-//		enemy.setDamageSe(m_hEnemySound);
+		enemy.setDamageSe(m_hEnemySound);
 		posX += 80.0f;
 	}
 	//待ち時間
@@ -67,6 +75,8 @@ void SceneKnockDown::init()
 	//フェード
 	m_fadeBright = 0;
 	m_fadeSpeed = 8;
+	//色
+	m_color = GetColor(0, 0, 128);//ネイビー
 }
 void SceneKnockDown::end()
 {
@@ -75,16 +85,17 @@ void SceneKnockDown::end()
 	{
 		DeleteGraph(handle);
 	}
-//		DeleteSoundMem(m_hEnemySound);
+		DeleteSoundMem(m_hShotSound);
 	
 	for (auto& enemy : m_enemy)
 	{
 		DeleteGraph(m_hEnemyGraph);
-//		DeleteSoundMem(m_hShotSound);
+		DeleteSoundMem(m_hEnemySound);
 	}
 
 	DeleteGraph(m_hShotGraph);
-	
+	DeleteGraph(m_hBackground);
+
 	for (auto& pShot : m_pShotVt)
 	{
 		assert(pShot);
@@ -228,6 +239,7 @@ void SceneKnockDown::draw()
 {
 	//フェード
 	SetDrawBright(m_fadeBright, m_fadeBright, m_fadeBright);
+	DrawGraph(0, 0, m_hBackground, false);
 	m_player.draw();
 	for (auto& enemy : m_enemy)
 	{
@@ -243,31 +255,29 @@ void SceneKnockDown::draw()
 	//スタートまでの時間中に表示
 	if (m_waitStart != 0)
 	{
-		DrawString(300, 200, "ホコリを駆逐せよ！！", GetColor(255, 255, 255));
-		DrawString(200, 220, "←・→キーで移動 x(B)でショット", GetColor(255, 255, 255));
+		DrawString(200, 200, "ホコリを駆逐せよ！！", m_color);
+		DrawString(200, 220, "←・→キーで移動 x(B)でショット", m_color);
 		//m_timeが0の時　スタートを表示
 		if (m_time <= 0)
 		{
-			DrawString(Game::kScreenWidth - 100, Game::kScreenHeight - 50,
-				"スタート!!", GetColor(255, 255, 255));
+			DrawString(200, 240,"スタート!!", m_color);
 		}
 		else
 		{
-			DrawFormatString(Game::kScreenWidth - 150, Game::kScreenHeight - 50,
-				GetColor(255, 255, 255), "始まるまで..%d", m_time);
+			DrawFormatString(200, 240, m_color, "始まるまで..%d", m_time);
 		}
 	}
 	//クリアの時
 	if (m_isSuccess)
 	{
-		DrawString(300, 200, "クリア！", GetColor(255, 255, 255));
-		DrawFormatString(300, 220, GetColor(255, 255, 255), "タイトルへ戻る..%d", m_time);
+		DrawString(300, 200, "駆逐完了！", m_color);
+		DrawFormatString(300, 220, m_color, "タイトルへ戻る..%d", m_time);
 	}
 	//ミスの時
 	else if(m_isMis)
 	{
-		DrawString(300, 200, "失敗", GetColor(255, 255, 255));
-		DrawFormatString(300, 220, GetColor(255, 255, 255), "タイトルへ戻る..%d", m_time);
+		DrawString(300, 200, "駆逐失敗", m_color);
+		DrawFormatString(300, 220, m_color, "タイトルへ戻る..%d", m_time);
 	}
 }
 //カウント

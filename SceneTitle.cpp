@@ -2,6 +2,7 @@
 #include "game.h"
 #include "SceneTitle.h"
 #include "SceneStepOn.h"
+#include "SceneKnockDown.h"
 #include "Pad.h"
 
 namespace
@@ -15,6 +16,7 @@ void SceneTitle::init()
 	m_fadeSpeed = 8;
 	//サウンド取得
 	m_hSelectionSe = LoadSoundMem(kSelectionSoundName);
+	m_selection = 0;
 }
 
 void SceneTitle::end()
@@ -37,8 +39,12 @@ SceneBase* SceneTitle::update()
 	{
 		//フェードアウトしきったら次のシーンへ
 		m_fadeBright = 0;
-		//StepOnに切り替え
-		return (new SceneStepOn);
+		switch (m_selection)
+		{
+			case 0:return (new SceneStepOn);//StepOnに切り替え
+			case 1:return (new SceneKnockDown);//SceneKnockDownに切り替え
+		}
+
 	}
 
 	Pad::update();
@@ -49,6 +55,15 @@ SceneBase* SceneTitle::update()
 		{
 			//フェードアウトするために取得
 			m_fadeSpeed = -8;
+			m_selection = 0;
+			//選択肢を選んだら音を鳴らす
+			PlaySoundMem(m_hSelectionSe, DX_PLAYTYPE_BACK, true);
+		}
+		if (Pad::isPress(PAD_INPUT_2))
+		{
+			//フェードアウトするために取得
+			m_fadeSpeed = -8;
+			m_selection = 1;
 			//選択肢を選んだら音を鳴らす
 			PlaySoundMem(m_hSelectionSe, DX_PLAYTYPE_BACK, true);
 		}
@@ -62,5 +77,7 @@ void SceneTitle::draw()
 	SetDrawBright(m_fadeBright, m_fadeBright, m_fadeBright);//描画輝度をセット
 	//文字表示
 	DrawString(200, 100, "タイトル画面", GetColor(255, 255, 255));
-	DrawString(110, 300, " z(A)を押してスタート escを押して終了", GetColor(255, 255, 255));
+	DrawString(110, 300, " z(A) 踏みつけろ", GetColor(255, 255, 255));
+	DrawString(110, 340, " x(B) ホコリを駆逐せよ！！", GetColor(255, 255, 255));
+	DrawString(110, 380, " Q(BACK) 終了", GetColor(255, 255, 255));
 }

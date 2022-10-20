@@ -9,6 +9,7 @@ public:
 		m_fadeBright = 0;
 		m_fadeSpeed = 0;
 		m_hSelectionSe = -1;
+		m_selection = -1;
 	}
 	virtual ~SceneTitle(){}
 
@@ -24,4 +25,6 @@ private:
 	int m_fadeSpeed;
 	//選択時のサウンド
 	int m_hSelectionSe;
+	//画面の選択
+	int m_selection;
 };

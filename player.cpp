@@ -63,9 +63,9 @@ void PlayerStepOn::update()
 	if (Pad::isPress(PAD_INPUT_RIGHT))
 	{
 		m_isRight = true;
-		if (m_pos.x > Game::kScreenWidth - m_graphSize.x)
+		if (m_pos.x > Game::kScreenWidth - m_colSize.x)
 		{
-			m_pos.x = Game::kScreenWidth - m_graphSize.x;
+			m_pos.x = Game::kScreenWidth - m_colSize.x;
 		}
 		m_pos.x += kSpeed;
 	}
@@ -112,8 +112,8 @@ bool PlayerStepOn::isCol(EnemyStepOn& enemy)
 	float playerTop = getPos().y;
 	float playerBottom = getPos().y + m_colSize.y;
 
-	float enemyLeft = enemy.getPos().x;
-	float enemyRight = enemy.getPos().x + enemy.getColSize().x;
+	float enemyLeft = enemy.getPos().x - 5.0f;
+	float enemyRight = enemy.getPos().x + enemy.getColSize().x - 5.0f;
 	float enemyTop = enemy.getPos().y;
 	float enemyBottom = enemy.getPos().y + enemy.getColSize().y;
 
@@ -185,12 +185,15 @@ void PlayerKnockDown::update()
 	m_shotInterval--;
 	if (m_shotInterval < 0)	m_shotInterval = 0;
 	if (m_shotInterval <= 0)
-	{	
-		if (m_pMain->createShot(m_startPos, m_shotVec))
+	{
+		if (Pad::isPress(PAD_INPUT_2))
 		{
-			m_shotInterval = kShotInterval;
+			if (m_pMain->createShot(m_startPos, m_shotVec))
+			{
+				m_shotInterval = kShotInterval;
+			}
+			PlaySoundMem(m_hShotSe, DX_PLAYTYPE_BACK, true);
 		}
-//		PlaySoundMem(m_hShotSe, DX_PLAYTYPE_BACK, true);
 	}
 	
 	//ˆÚ“®

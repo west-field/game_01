@@ -55,8 +55,6 @@ void Shot::draw()
 {
 	if (!m_isExist)	return;
 	DrawGraphF(m_pos.x, m_pos.y, m_handle, true);
-	DrawCircle(static_cast<int>(getCenter().x), static_cast<int>(getCenter().y),
-		static_cast<int>(getRadius()), GetColor(255, 255, 255), false);
 }
 //“–‚½‚è”»’è‚Ì”¼ŒaŽæ“¾
 float Shot::getRadius() const
