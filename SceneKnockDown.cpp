@@ -316,7 +316,7 @@ void SceneKnockDown::draw()
 	//スタートまでの時間中に表示
 	if (m_waitTime != 0)
 	{
-		DrawString(200, 220, "十字キーで移動 (B)xでショット", m_color);
+		DrawString(200, 220, "十字キーで移動 (B)Xでショット", m_color);
 		//m_timeが0の時　スタートを表示
 		if (m_time <= 0)
 		{
